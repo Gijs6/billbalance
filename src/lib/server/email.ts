@@ -17,6 +17,8 @@ function getTransport() {
 	});
 }
 
+const SENDER_NAME = 'billbalance';
+
 export async function sendPasswordResetEmail(email: string, resetUrl: string) {
 	const transport = getTransport();
 
@@ -25,11 +27,13 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
 		return;
 	}
 
+	const senderAddress = env.SMTP_FROM ?? env.SMTP_USER;
+
 	await transport.sendMail({
-		from: env.SMTP_FROM ?? env.SMTP_USER,
+		from: senderAddress ? `${SENDER_NAME} <${senderAddress}>` : undefined,
 		to: email,
-		subject: 'Reset your password',
-		text: `Reset your password: ${resetUrl}`,
-		html: `<p>Click the link below to reset your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
+		subject: 'Reset your password - billbalance',
+		text: `Hey,\n\nYou can reset your password using the link below:\n${resetUrl}\n\nIf you didn't request this, you can safely ignore this email.\n\nbillbalance`,
+		html: `<p>Hey,</p><p>You can reset your password using the link below:</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>If you didn't request this, you can safely ignore this email.</p><p>billbalance</p>`
 	});
 }
