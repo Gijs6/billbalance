@@ -8,16 +8,10 @@
 	let { data }: { data: PageData } = $props();
 	const groupId = $derived(page.params.id!);
 
-	function effectClass(cents: number): string {
-		if (cents > 0) return 'balance balance--positive';
-		if (cents < 0) return 'balance balance--negative';
-		return 'balance balance--zero';
-	}
-
-	function effectLabel(cents: number): string {
-		if (cents === 0) return 'no effect on your balance';
-		const sign = cents > 0 ? '+' : '';
-		return `${sign}${formatCents(cents)} for your balance`;
+	function effectLabelClass(cents: number): string {
+		if (cents > 0) return 'balance-label balance-label--positive';
+		if (cents < 0) return 'balance-label balance-label--negative';
+		return 'balance-label balance-label--zero';
 	}
 
 	const dateFormatter = new Intl.DateTimeFormat('en-GB', {
@@ -30,7 +24,7 @@
 <PageTitle title="Expenses" />
 
 {#if !data.isClosed}
-	<p class="form__actions" style="margin-bottom: 1rem;">
+	<p class="form__actions">
 		<a class="button" href={resolve('/groups/[id]/expenses/new', { id: groupId })}>Add expense</a>
 	</p>
 {/if}
@@ -40,7 +34,7 @@
 		{#each data.expenses as expense (expense.id)}
 			<li>
 				<a
-					class="list-item expense-row"
+					class="list-item list-item--expense"
 					href={resolve('/groups/[id]/expenses/[expenseId]', {
 						id: groupId,
 						expenseId: expense.id
@@ -52,11 +46,17 @@
 							>Paid by {expense.paidByName} · {dateFormatter.format(expense.createdAt)}</span
 						>
 					</span>
-					<span class="expense-row__amounts">
+					<span class="list-item__amounts">
 						<span class="balance">{formatCents(expense.amountCents)}</span>
-						<span class={effectClass(expense.myEffectCents)}
-							>{effectLabel(expense.myEffectCents)}</span
-						>
+						<span class={effectLabelClass(expense.myEffectCents)}>
+							{#if expense.myEffectCents === 0}
+								no effect on your balance
+							{:else}
+								<span class="balance"
+									>{expense.myEffectCents > 0 ? '+' : ''}{formatCents(expense.myEffectCents)}</span
+								> for your balance
+							{/if}
+						</span>
 					</span>
 				</a>
 			</li>

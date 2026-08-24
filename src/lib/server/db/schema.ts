@@ -21,6 +21,8 @@ export const session = sqliteTable('session', {
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
 });
 
+export type Session = typeof session.$inferSelect;
+
 export const passwordResetToken = sqliteTable('password_reset_token', {
 	id: text('id').primaryKey(),
 	userId: text('user_id')
@@ -40,7 +42,7 @@ export const group = sqliteTable('group', {
 		.notNull()
 		.unique()
 		.$defaultFn(() => generateHumanCode()),
-	createdBy: text('created_by')
+	createdByUser: text('created_by_user')
 		.notNull()
 		.references(() => user.id),
 	status: text('status', { enum: ['open', 'closed'] })
@@ -77,10 +79,10 @@ export const expense = sqliteTable('expense', {
 		.references(() => group.id, { onDelete: 'cascade' }),
 	description: text('description').notNull(),
 	amountCents: integer('amount_cents').notNull(),
-	paidBy: text('paid_by')
+	paidByUser: text('paid_by_user')
 		.notNull()
 		.references(() => user.id),
-	createdBy: text('created_by')
+	createdByUser: text('created_by_user')
 		.notNull()
 		.references(() => user.id),
 	createdAt: integer('created_at', { mode: 'timestamp' })
@@ -88,8 +90,8 @@ export const expense = sqliteTable('expense', {
 		.$defaultFn(() => new Date())
 });
 
-export const expenseSplit = sqliteTable(
-	'expense_split',
+export const expenseConsumption = sqliteTable(
+	'expense_consumption',
 	{
 		expenseId: text('expense_id')
 			.notNull()
@@ -128,5 +130,5 @@ export const settlement = sqliteTable('settlement', {
 export type Group = typeof group.$inferSelect;
 export type GroupMember = typeof groupMember.$inferSelect;
 export type Expense = typeof expense.$inferSelect;
-export type ExpenseSplit = typeof expenseSplit.$inferSelect;
+export type ExpenseConsumption = typeof expenseConsumption.$inferSelect;
 export type Settlement = typeof settlement.$inferSelect;

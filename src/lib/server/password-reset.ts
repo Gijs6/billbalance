@@ -32,6 +32,6 @@ export async function validatePasswordResetToken(token: string): Promise<string 
 	return row.userId;
 }
 
-export async function consumePasswordResetToken(token: string) {
+export async function invalidatePasswordResetToken(token: string) {
 	await db.delete(passwordResetToken).where(eq(passwordResetToken.id, hashToken(token)));
 }

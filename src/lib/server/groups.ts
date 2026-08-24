@@ -1,9 +1,15 @@
 import { and, eq } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { expense, expenseSplit, group, groupMember, settlement, user } from '$lib/server/db/schema';
+import {
+	expense,
+	expenseConsumption,
+	group,
+	groupMember,
+	settlement,
+	user
+} from '$lib/server/db/schema';
 import type { Group, Settlement } from '$lib/server/db/schema';
-import { generateHumanCode } from '$lib/server/id';
 import { simplifyDebts } from '$lib/money';
 
 export async function requireGroupMembership(groupId: string, userId: string): Promise<Group> {
@@ -28,11 +34,12 @@ export function requireOpenGroup(currentGroup: Group): void {
 export interface GroupMemberInfo {
 	id: string;
 	name: string;
+	joinedAt: Date;
 }
 
 export async function getGroupMembers(groupId: string): Promise<GroupMemberInfo[]> {
 	const rows = await db
-		.select({ id: user.id, name: user.name })
+		.select({ id: user.id, name: user.name, joinedAt: groupMember.joinedAt })
 		.from(groupMember)
 		.innerJoin(user, eq(groupMember.userId, user.id))
 		.where(eq(groupMember.groupId, groupId));
@@ -53,27 +60,44 @@ export async function addGroupMember(groupId: string, userId: string): Promise<v
 	await db.insert(groupMember).values({ groupId, userId });
 }
 
-export async function computeGroupBalances(groupId: string): Promise<Record<string, number>> {
-	const balances: Record<string, number> = {};
+export interface GroupBalanceBreakdown {
+	paidCents: number;
+	consumedCents: number;
+}
+
+export async function computeGroupBalanceBreakdown(
+	groupId: string
+): Promise<Record<string, GroupBalanceBreakdown>> {
+	const breakdown: Record<string, GroupBalanceBreakdown> = {};
+	const ensure = (id: string) => (breakdown[id] ??= { paidCents: 0, consumedCents: 0 });
 
 	const expenses = await db.select().from(expense).where(eq(expense.groupId, groupId));
 	for (const e of expenses) {
-		balances[e.paidBy] = (balances[e.paidBy] ?? 0) + e.amountCents;
+		ensure(e.paidByUser).paidCents += e.amountCents;
 	}
 
-	const splits = await db
+	const consumptions = await db
 		.select({
-			userId: expenseSplit.userId,
-			amountCents: expenseSplit.amountCents,
-			expenseId: expenseSplit.expenseId
+			userId: expenseConsumption.userId,
+			amountCents: expenseConsumption.amountCents,
+			expenseId: expenseConsumption.expenseId
 		})
-		.from(expenseSplit)
-		.innerJoin(expense, eq(expenseSplit.expenseId, expense.id))
+		.from(expenseConsumption)
+		.innerJoin(expense, eq(expenseConsumption.expenseId, expense.id))
 		.where(eq(expense.groupId, groupId));
-	for (const s of splits) {
-		balances[s.userId] = (balances[s.userId] ?? 0) - s.amountCents;
+	for (const c of consumptions) {
+		ensure(c.userId).consumedCents += c.amountCents;
 	}
 
+	return breakdown;
+}
+
+export async function computeGroupBalances(groupId: string): Promise<Record<string, number>> {
+	const breakdown = await computeGroupBalanceBreakdown(groupId);
+	const balances: Record<string, number> = {};
+	for (const [id, { paidCents, consumedCents }] of Object.entries(breakdown)) {
+		balances[id] = paidCents - consumedCents;
+	}
 	return balances;
 }
 
@@ -85,8 +109,8 @@ export async function closeGroup(groupId: string): Promise<void> {
 		await db.insert(settlement).values(
 			edges.map((edge) => ({
 				groupId,
-				fromUser: edge.from,
-				toUser: edge.to,
+				fromUser: edge.fromUser,
+				toUser: edge.toUser,
 				amountCents: edge.amountCents
 			}))
 		);
@@ -135,12 +159,6 @@ export async function markSettlementPaid(
 		.update(settlement)
 		.set({ status: 'paid', paidAt: new Date() })
 		.where(eq(settlement.id, settlementId));
-}
-
-export async function regenerateJoinCode(groupId: string): Promise<string> {
-	const joinCode = generateHumanCode();
-	await db.update(group).set({ joinCode }).where(eq(group.id, groupId));
-	return joinCode;
 }
 
 export async function getUserGroups(userId: string): Promise<Group[]> {

@@ -76,6 +76,12 @@ describe('splitEqual', () => {
 			expect(Math.max(...values) - Math.min(...values)).toBeLessThanOrEqual(1);
 		}
 	});
+
+	it('handles a huge total without losing or duplicating cents', () => {
+		const total = 999_999_999_99;
+		const shares = splitEqual(total, ['a', 'b', 'c'], CREATED_AT);
+		expect(Object.values(shares).reduce((a, b) => a + b, 0)).toBe(total);
+	});
 });
 
 describe('formatCents', () => {
@@ -246,18 +252,20 @@ describe('simplifyDebts', () => {
 	});
 
 	it('settles a simple two-person debt', () => {
-		expect(simplifyDebts({ a: -500, b: 500 })).toEqual([{ from: 'a', to: 'b', amountCents: 500 }]);
+		expect(simplifyDebts({ a: -500, b: 500 })).toEqual([
+			{ fromUser: 'a', toUser: 'b', amountCents: 500 }
+		]);
 	});
 
 	it('simplifies a three-person cycle into a single transaction where possible', () => {
 		const edges = simplifyDebts({ a: -1000, b: 1000, c: 0 });
-		expect(edges).toEqual([{ from: 'a', to: 'b', amountCents: 1000 }]);
+		expect(edges).toEqual([{ fromUser: 'a', toUser: 'b', amountCents: 1000 }]);
 	});
 
 	it('reduces a net-balance set to fewer transactions than naive pairwise IOUs', () => {
 		const edges = simplifyDebts({ a: 2000, b: -1000, c: -1000 });
 		expect(edges).toHaveLength(2);
-		expect(edges.every((e) => e.to === 'a')).toBe(true);
+		expect(edges.every((e) => e.toUser === 'a')).toBe(true);
 		expect(edges.reduce((sum, e) => sum + e.amountCents, 0)).toBe(2000);
 	});
 
@@ -270,8 +278,8 @@ describe('simplifyDebts', () => {
 
 		const net: Record<string, number> = { ...balances };
 		for (const edge of edges) {
-			net[edge.from] += edge.amountCents;
-			net[edge.to] -= edge.amountCents;
+			net[edge.fromUser] += edge.amountCents;
+			net[edge.toUser] -= edge.amountCents;
 		}
 		for (const amount of Object.values(net)) {
 			expect(amount).toBe(0);
@@ -288,9 +296,56 @@ describe('simplifyDebts', () => {
 		const edges = simplifyDebts(balances);
 		expect(edges).toHaveLength(3);
 		for (const edge of edges) {
-			if (edge.from === 'e' || edge.to === 'e') {
-				expect([edge.from, edge.to].sort()).toEqual(['b', 'e']);
+			if (edge.fromUser === 'e' || edge.toUser === 'e') {
+				expect([edge.fromUser, edge.toUser].sort()).toEqual(['b', 'e']);
 			}
 		}
+	});
+
+	it('handles a larger group without crossing debts incorrectly', () => {
+		const balances: Record<string, number> = {};
+		for (let i = 0; i < 8; i++) balances[`debtor-${i}`] = -((i + 1) * 100);
+		balances.creditor = Object.values(balances).reduce((a, b) => a - b, 0);
+
+		const edges = simplifyDebts(balances);
+		expect(edges.every((e) => e.toUser === 'creditor')).toBe(true);
+
+		const net: Record<string, number> = { ...balances };
+		for (const edge of edges) {
+			net[edge.fromUser] += edge.amountCents;
+			net[edge.toUser] -= edge.amountCents;
+		}
+		for (const amount of Object.values(net)) {
+			expect(amount).toBe(0);
+		}
+	});
+
+	it('handles huge amounts without losing precision', () => {
+		const balances = { a: -100_000_000_000, b: 100_000_000_000 };
+		expect(simplifyDebts(balances)).toEqual([
+			{ fromUser: 'a', toUser: 'b', amountCents: 100_000_000_000 }
+		]);
+	});
+
+	it('reroutes matches to avoid transfers under two euros when an alternative pairing exists', () => {
+		const balances = { a: -400, b: -300, c: 500, d: 200 };
+		const edges = simplifyDebts(balances);
+		expect(edges.every((edge) => edge.amountCents >= 200)).toBe(true);
+	});
+
+	it('still produces a transfer under one euro when it is unavoidable', () => {
+		const edges = simplifyDebts({ a: -999, b: -1, c: 1000 });
+		expect(edges.some((edge) => edge.amountCents < 100)).toBe(true);
+	});
+
+	it('prioritizes avoiding transfers under one euro over transfers under two euros', () => {
+		const balances = { a: -120, b: -130, c: -150, d: 250, e: 150 };
+		const edges = simplifyDebts(balances);
+		expect(edges.every((edge) => edge.amountCents >= 100)).toBe(true);
+	});
+
+	it('still produces a transfer under 10 cents when it is truly unavoidable', () => {
+		const edges = simplifyDebts({ a: -3, b: -500, c: 503 });
+		expect(edges.some((edge) => edge.amountCents < 10)).toBe(true);
 	});
 });

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { eq } from 'drizzle-orm';
 import type { RequestEvent } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { session, user, type User } from '$lib/server/db/schema';
+import { session, user, type Session, type User } from '$lib/server/db/schema';
 import { generateToken } from '$lib/server/id';
 
 export { hashPassword, verifyPassword } from '$lib/server/password';
@@ -25,7 +25,7 @@ export async function createSession(userId: string) {
 
 export async function validateSessionToken(
 	token: string
-): Promise<{ session: typeof session.$inferSelect; user: User } | { session: null; user: null }> {
+): Promise<{ session: Session; user: User } | { session: null; user: null }> {
 	const id = hashToken(token);
 	const result = await db
 		.select({ session, user })

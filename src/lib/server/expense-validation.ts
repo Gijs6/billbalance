@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { parseEuros } from '$lib/money';
 
-const splitSchema = z.object({
+const consumptionSchema = z.object({
 	userId: z.string().min(1),
-	amountCents: z.number().int().positive('Each participant’s share must be greater than zero.')
+	amountCents: z.number().int().positive("Each member's consumed amount must be greater than zero.")
 });
 
 const expenseSchema = z
@@ -14,19 +14,22 @@ const expenseSchema = z
 			.min(1, 'Please enter a description.')
 			.max(200, 'Description is too long.'),
 		amountCents: z.number().int().positive('Please enter an amount greater than zero.'),
-		paidBy: z.string().min(1, 'Please choose who paid.'),
-		splits: z.array(splitSchema).min(1, 'Select at least one participant.')
+		paidByUser: z.string().min(1, 'Please choose who paid.'),
+		consumption: z.array(consumptionSchema).min(1, 'Select at least one member.')
 	})
-	.refine((data) => data.splits.reduce((sum, s) => sum + s.amountCents, 0) === data.amountCents, {
-		message: 'Split amounts must add up to the total amount.',
-		path: ['splits']
-	});
+	.refine(
+		(data) => data.consumption.reduce((sum, c) => sum + c.amountCents, 0) === data.amountCents,
+		{
+			message: 'Consumed amounts must add up to the total amount.',
+			path: ['consumption']
+		}
+	);
 
 export interface ParsedExpense {
 	description: string;
 	amountCents: number;
-	paidBy: string;
-	splits: { userId: string; amountCents: number }[];
+	paidByUser: string;
+	consumption: { userId: string; amountCents: number }[];
 }
 
 export type ExpenseFormResult =
@@ -35,7 +38,7 @@ export type ExpenseFormResult =
 export function parseExpenseForm(formData: FormData, memberIds: string[]): ExpenseFormResult {
 	const description = formData.get('description');
 	const amountRaw = formData.get('amount');
-	const paidBy = formData.get('paidBy');
+	const paidByUser = formData.get('paidByUser');
 
 	if (typeof amountRaw !== 'string') {
 		return { success: false, message: 'Please enter an amount.' };
@@ -45,29 +48,29 @@ export function parseExpenseForm(formData: FormData, memberIds: string[]): Expen
 		return { success: false, message: 'Please enter a valid amount, e.g. 12.34.' };
 	}
 
-	const splits: { userId: string; amountCents: number }[] = [];
+	const consumption: { userId: string; amountCents: number }[] = [];
 	for (const id of memberIds) {
-		if (formData.get(`participant_${id}`) === null) continue;
+		if (formData.get(`member_${id}`) === null) continue;
 
-		const shareRaw = formData.get(`share_${id}`);
-		if (typeof shareRaw !== 'string') {
+		const consumedRaw = formData.get(`consumed_${id}`);
+		if (typeof consumedRaw !== 'string') {
 			return {
 				success: false,
-				message: 'Please enter a share amount for each selected participant.'
+				message: 'Please enter a consumed amount for each selected member.'
 			};
 		}
-		const shareCents = parseEuros(shareRaw);
-		if (shareCents === null) {
-			return { success: false, message: 'Please enter valid share amounts, e.g. 12.34.' };
+		const consumedCents = parseEuros(consumedRaw);
+		if (consumedCents === null) {
+			return { success: false, message: 'Please enter valid consumed amounts, e.g. 12.34.' };
 		}
-		splits.push({ userId: id, amountCents: shareCents });
+		consumption.push({ userId: id, amountCents: consumedCents });
 	}
 
 	const result = expenseSchema.safeParse({
 		description,
 		amountCents,
-		paidBy,
-		splits
+		paidByUser,
+		consumption
 	});
 
 	if (!result.success) {
@@ -75,7 +78,7 @@ export function parseExpenseForm(formData: FormData, memberIds: string[]): Expen
 		return { success: false, message };
 	}
 
-	if (!memberIds.includes(result.data.paidBy)) {
+	if (!memberIds.includes(result.data.paidByUser)) {
 		return { success: false, message: 'Please choose who paid.' };
 	}
 

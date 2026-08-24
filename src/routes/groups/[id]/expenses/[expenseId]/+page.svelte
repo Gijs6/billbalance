@@ -8,8 +8,12 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	const initialParticipants = Object.fromEntries(
-		data.splits.map((s) => [s.userId, { checked: true, share: centsToInputValue(s.amountCents) }])
+	// svelte-ignore state_referenced_locally
+	const initialConsumption = Object.fromEntries(
+		data.consumption.map((c) => [
+			c.userId,
+			{ checked: true, consumed: centsToInputValue(c.amountCents) }
+		])
 	);
 	const memberName = (id: string) => data.members.find((m) => m.id === id)?.name ?? 'Unknown';
 </script>
@@ -23,14 +27,16 @@
 		<dt class="form__label">Total</dt>
 		<dd>{formatCents(data.expense.amountCents)}</dd>
 		<dt class="form__label">Paid by</dt>
-		<dd>{memberName(data.expense.paidBy)}</dd>
-		<dt class="form__label">Split</dt>
 		<dd>
+			{data.expense.paidByUser === data.user?.id ? 'you' : memberName(data.expense.paidByUser)}
+		</dd>
+		<dt class="form__label">Consumed</dt>
+		<dd class="card__full">
 			<ul class="list">
-				{#each data.splits as split (split.userId)}
+				{#each data.consumption as consumedAmount (consumedAmount.userId)}
 					<li class="list-item">
-						<span class="list-item__title">{memberName(split.userId)}</span>
-						<span class="balance">{formatCents(split.amountCents)}</span>
+						<span class="list-item__title">{memberName(consumedAmount.userId)}</span>
+						<span class="balance">{formatCents(consumedAmount.amountCents)}</span>
 					</li>
 				{/each}
 			</ul>
@@ -41,18 +47,17 @@
 
 	<ExpenseForm
 		members={data.members}
-		createdAt={data.expense.createdAt.getTime()}
+		initialCreatedAt={data.expense.createdAt.getTime()}
 		action="?/update"
 		submitLabel="Save changes"
-		errorMessage={form && 'message' in form ? form.message : undefined}
+		message={form && 'message' in form ? form.message : undefined}
 		initialDescription={data.expense.description}
 		initialAmount={centsToInputValue(data.expense.amountCents)}
-		initialPaidBy={data.expense.paidBy}
-		{initialParticipants}
+		initialPaidByUser={data.expense.paidByUser}
+		{initialConsumption}
 	/>
 
-	<section class="section" aria-labelledby="danger-heading">
-		<h2 id="danger-heading" class="section__title">Delete expense</h2>
+	<div class="danger-zone">
 		{#if form && 'needsDeleteConfirm' in form && form.needsDeleteConfirm}
 			<p class="form__error" role="alert">
 				Are you sure you want to delete <strong>{data.expense.description}</strong>? This cannot be
@@ -74,5 +79,5 @@
 				<button type="submit" class="button button--danger">Delete expense</button>
 			</form>
 		{/if}
-	</section>
+	</div>
 {/if}

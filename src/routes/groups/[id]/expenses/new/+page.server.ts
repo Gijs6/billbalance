@@ -1,9 +1,10 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { expense, expenseSplit } from '$lib/server/db/schema';
+import { expense, expenseConsumption } from '$lib/server/db/schema';
 import { getGroupMembers, requireGroupMembership, requireOpenGroup } from '$lib/server/groups';
 import { parseExpenseForm } from '$lib/server/expense-validation';
+import { setFlash } from '$lib/server/flash';
 
 export const load: PageServerLoad = async ({ params, locals, url }) => {
 	if (!locals.user) redirect(302, `/login?redirectTo=${encodeURIComponent(url.pathname)}`);
@@ -16,7 +17,7 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 };
 
 export const actions: Actions = {
-	default: async ({ params, request, locals }) => {
+	default: async ({ params, request, locals, cookies }) => {
 		if (!locals.user) redirect(302, '/login');
 		const currentGroup = await requireGroupMembership(params.id, locals.user.id);
 		requireOpenGroup(currentGroup);
@@ -38,19 +39,20 @@ export const actions: Actions = {
 				groupId: params.id,
 				description: result.data.description,
 				amountCents: result.data.amountCents,
-				paidBy: result.data.paidBy,
-				createdBy: locals.user.id
+				paidByUser: result.data.paidByUser,
+				createdByUser: locals.user.id
 			})
 			.returning();
 
-		await db.insert(expenseSplit).values(
-			result.data.splits.map((s) => ({
+		await db.insert(expenseConsumption).values(
+			result.data.consumption.map((c) => ({
 				expenseId: newExpense.id,
-				userId: s.userId,
-				amountCents: s.amountCents
+				userId: c.userId,
+				amountCents: c.amountCents
 			}))
 		);
 
+		setFlash(cookies, 'Expense added.');
 		redirect(303, `/groups/${params.id}`);
 	}
 };

@@ -13,6 +13,6 @@
 <ExpenseForm
 	members={data.members}
 	submitLabel="Add expense"
-	errorMessage={form?.message}
-	initialPaidBy={data.currentUserId}
+	message={form?.message}
+	initialPaidByUser={data.currentUserId}
 />

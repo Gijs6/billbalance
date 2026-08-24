@@ -23,7 +23,7 @@ export const actions: Actions = {
 
 		const [newGroup] = await db
 			.insert(group)
-			.values({ name: name.trim(), createdBy: locals.user.id })
+			.values({ name: name.trim(), createdByUser: locals.user.id })
 			.returning();
 
 		await db.insert(groupMember).values({ groupId: newGroup.id, userId: locals.user.id });

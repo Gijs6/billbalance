@@ -7,46 +7,51 @@
 		name: string;
 	}
 
-	interface ParticipantInitial {
+	interface MemberConsumption {
 		checked: boolean;
-		share: string;
+		consumed: string;
 	}
 
 	let {
 		members,
-		createdAt: initialCreatedAt = undefined,
+		initialCreatedAt = undefined,
 		action = undefined,
 		submitLabel,
-		errorMessage,
+		message,
 		initialDescription = '',
 		initialAmount = '',
-		initialPaidBy = '',
-		initialParticipants = {}
+		initialPaidByUser = '',
+		initialConsumption = {}
 	}: {
 		members: MemberInfo[];
-		createdAt?: number;
+		initialCreatedAt?: number;
 		action?: string;
 		submitLabel: string;
-		errorMessage?: string;
+		message?: string;
 		initialDescription?: string;
 		initialAmount?: string;
-		initialPaidBy?: string;
-		initialParticipants?: Record<string, ParticipantInitial>;
+		initialPaidByUser?: string;
+		initialConsumption?: Record<string, MemberConsumption>;
 	} = $props();
 
+	// svelte-ignore state_referenced_locally
 	const createdAt = initialCreatedAt ?? Date.now();
 
+	// svelte-ignore state_referenced_locally
 	let description = $state(initialDescription);
+	// svelte-ignore state_referenced_locally
 	let amount = $state(initialAmount);
-	let paidBy = $state(initialPaidBy || members[0]?.id || '');
+	// svelte-ignore state_referenced_locally
+	let paidByUser = $state(initialPaidByUser || members[0]?.id || '');
 
-	const participants = $state(
+	// svelte-ignore state_referenced_locally
+	const consumption = $state(
 		Object.fromEntries(
 			members.map((m) => [
 				m.id,
 				{
-					checked: initialParticipants[m.id]?.checked ?? true,
-					share: initialParticipants[m.id]?.share ?? ''
+					checked: initialConsumption[m.id]?.checked ?? true,
+					consumed: initialConsumption[m.id]?.consumed ?? ''
 				}
 			])
 		)
@@ -54,19 +59,27 @@
 
 	function equalize() {
 		const totalCents = parseEuros(amount) ?? 0;
-		const checkedIds = members.filter((m) => participants[m.id].checked).map((m) => m.id);
+		const checkedIds = members.filter((m) => consumption[m.id].checked).map((m) => m.id);
 		if (checkedIds.length === 0) return;
 
-		const shares = splitEqual(totalCents, checkedIds, createdAt);
+		const consumedAmounts = splitEqual(totalCents, checkedIds, createdAt);
 		for (const id of checkedIds) {
-			participants[id].share = centsToInputValue(shares[id]);
+			consumption[id].consumed = centsToInputValue(consumedAmounts[id]);
 		}
 	}
+
+	$effect(() => {
+		for (const m of members) {
+			if (consumption[m.id].checked && parseEuros(consumption[m.id].consumed) === 0) {
+				consumption[m.id].checked = false;
+			}
+		}
+	});
 </script>
 
 <form method="POST" {action} class="form form--wide" use:enhance>
-	{#if errorMessage}
-		<p class="form__error" role="alert">{errorMessage}</p>
+	{#if message}
+		<p class="form__error" role="alert">{message}</p>
 	{/if}
 
 	<div class="form__field">
@@ -97,8 +110,8 @@
 	</div>
 
 	<div class="form__field">
-		<label class="form__label" for="paidBy">Paid by</label>
-		<select class="form__select" id="paidBy" name="paidBy" bind:value={paidBy} required>
+		<label class="form__label" for="paidByUser">Paid by</label>
+		<select class="form__select" id="paidByUser" name="paidByUser" bind:value={paidByUser} required>
 			{#each members as member (member.id)}
 				<option value={member.id}>{member.name}</option>
 			{/each}
@@ -108,37 +121,34 @@
 	<fieldset class="form__field">
 		<legend class="form__label">Split between</legend>
 		<p class="form__hint">
-			Choose who owes a share, and how much. Use "Equalize" to split evenly among the selected
-			people.
+			Choose who consumed part of this expense, and how much. Use "Split equally" to split evenly
+			among the selected members.
 		</p>
+		<button type="button" class="button button--secondary button--block" onclick={equalize}>
+			Split equally
+		</button>
 		<div class="form__checkbox-group">
 			{#each members as member (member.id)}
 				<div class="form__checkbox-row">
 					<input
 						type="checkbox"
-						id="participant_{member.id}"
-						name="participant_{member.id}"
-						bind:checked={participants[member.id].checked}
+						id="member_{member.id}"
+						name="member_{member.id}"
+						bind:checked={consumption[member.id].checked}
 					/>
-					<label for="participant_{member.id}" style="flex: 1;">{member.name}</label>
+					<label for="member_{member.id}">{member.name}</label>
 					<input
 						class="form__input"
-						style="max-width: 8rem;"
 						type="text"
 						inputmode="decimal"
 						placeholder="0.00"
-						name="share_{member.id}"
-						aria-label="{member.name}'s share in euros"
-						disabled={!participants[member.id].checked}
-						bind:value={participants[member.id].share}
+						name="consumed_{member.id}"
+						aria-label="{member.name}'s consumed amount in euros"
+						disabled={!consumption[member.id].checked}
+						bind:value={consumption[member.id].consumed}
 					/>
 				</div>
 			{/each}
-		</div>
-		<div class="form__actions" style="margin-top: 0.5rem;">
-			<button type="button" class="button button--secondary button--small" onclick={equalize}>
-				Equalize
-			</button>
 		</div>
 	</fieldset>
 

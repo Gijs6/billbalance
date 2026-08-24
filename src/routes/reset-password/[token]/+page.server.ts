@@ -4,7 +4,10 @@ import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
 import { hashPassword, invalidateAllSessionsForUser } from '$lib/server/auth';
-import { validatePasswordResetToken, consumePasswordResetToken } from '$lib/server/password-reset';
+import {
+	validatePasswordResetToken,
+	invalidatePasswordResetToken
+} from '$lib/server/password-reset';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const userId = await validatePasswordResetToken(params.token);
@@ -30,7 +33,7 @@ export const actions: Actions = {
 		const passwordHash = await hashPassword(password);
 		await db.update(user).set({ passwordHash }).where(eq(user.id, userId));
 
-		await consumePasswordResetToken(params.token);
+		await invalidatePasswordResetToken(params.token);
 		await invalidateAllSessionsForUser(userId);
 
 		redirect(302, '/login');

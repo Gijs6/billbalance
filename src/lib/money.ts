@@ -1,11 +1,11 @@
 export function splitEqual(
 	totalCents: number,
-	userIds: string[],
+	ids: string[],
 	createdAt: number
 ): Record<string, number> {
-	if (userIds.length === 0) return {};
+	if (ids.length === 0) return {};
 
-	const sortedIds = [...userIds].sort();
+	const sortedIds = [...ids].sort();
 	const base = Math.floor(totalCents / sortedIds.length);
 	const remainder = totalCents - base * sortedIds.length;
 	const offset = createdAt % sortedIds.length;
@@ -40,8 +40,8 @@ export function parseEuros(input: string): number | null {
 }
 
 export interface DebtEdge {
-	from: string;
-	to: string;
+	fromUser: string;
+	toUser: string;
 	amountCents: number;
 }
 
@@ -73,36 +73,64 @@ function findZeroSumClusters(entries: BalanceEntry[]): BalanceEntry[][] {
 	return [entries];
 }
 
-function settleCluster(entries: BalanceEntry[]): DebtEdge[] {
-	type Entry = { id: string; amountCents: number };
+const SMALL_TRANSFER_CENTS = 200;
+const VERY_SMALL_TRANSFER_CENTS = 100;
 
-	const debtors: Entry[] = [];
-	const creditors: Entry[] = [];
+function settleCluster(entries: BalanceEntry[]): DebtEdge[] {
+	const debtors: BalanceEntry[] = [];
+	const creditors: BalanceEntry[] = [];
 	for (const { id, amountCents } of entries) {
 		if (amountCents < 0) debtors.push({ id, amountCents: -amountCents });
 		else if (amountCents > 0) creditors.push({ id, amountCents });
 	}
 
-	const byAmountThenId = (a: Entry, b: Entry) =>
-		b.amountCents - a.amountCents || a.id.localeCompare(b.id);
+	const severity = (amountCents: number) => {
+		if (amountCents <= 0) return 0;
+		if (amountCents < VERY_SMALL_TRANSFER_CENTS) return 3;
+		if (amountCents < SMALL_TRANSFER_CENTS) return 1;
+		return 0;
+	};
+
+	const pairBadness = (debtor: BalanceEntry, creditor: BalanceEntry, transferred: number) => {
+		const leftoverDebtor = debtor.amountCents - transferred;
+		const leftoverCreditor = creditor.amountCents - transferred;
+		return 2 * severity(transferred) + severity(leftoverDebtor) + severity(leftoverCreditor);
+	};
 
 	const edges: DebtEdge[] = [];
 
 	while (debtors.length > 0 && creditors.length > 0) {
-		debtors.sort(byAmountThenId);
-		creditors.sort(byAmountThenId);
+		let best: {
+			debtor: BalanceEntry;
+			creditor: BalanceEntry;
+			badness: number;
+			transferred: number;
+		} | null = null;
 
-		const debtor = debtors[0];
-		const creditor = creditors[0];
-		const amountCents = Math.min(debtor.amountCents, creditor.amountCents);
+		for (const debtor of debtors) {
+			for (const creditor of creditors) {
+				const transferred = Math.min(debtor.amountCents, creditor.amountCents);
+				const badness = pairBadness(debtor, creditor, transferred);
+				const better =
+					best === null ||
+					badness < best.badness ||
+					(badness === best.badness &&
+						(transferred > best.transferred ||
+							(transferred === best.transferred &&
+								(debtor.id < best.debtor.id ||
+									(debtor.id === best.debtor.id && creditor.id < best.creditor.id)))));
+				if (better) best = { debtor, creditor, badness, transferred };
+			}
+		}
 
-		edges.push({ from: debtor.id, to: creditor.id, amountCents });
+		const { debtor, creditor, transferred } = best!;
+		edges.push({ fromUser: debtor.id, toUser: creditor.id, amountCents: transferred });
 
-		debtor.amountCents -= amountCents;
-		creditor.amountCents -= amountCents;
+		debtor.amountCents -= transferred;
+		creditor.amountCents -= transferred;
 
-		if (debtor.amountCents === 0) debtors.shift();
-		if (creditor.amountCents === 0) creditors.shift();
+		if (debtor.amountCents === 0) debtors.splice(debtors.indexOf(debtor), 1);
+		if (creditor.amountCents === 0) creditors.splice(creditors.indexOf(creditor), 1);
 	}
 
 	return edges;

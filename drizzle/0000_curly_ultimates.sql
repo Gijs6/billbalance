@@ -3,15 +3,15 @@ CREATE TABLE `expense` (
 	`group_id` text NOT NULL,
 	`description` text NOT NULL,
 	`amount_cents` integer NOT NULL,
-	`paid_by` text NOT NULL,
-	`created_by` text NOT NULL,
+	`paid_by_user` text NOT NULL,
+	`created_by_user` text NOT NULL,
 	`created_at` integer NOT NULL,
 	FOREIGN KEY (`group_id`) REFERENCES `group`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`paid_by`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`paid_by_user`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`created_by_user`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `expense_split` (
+CREATE TABLE `expense_consumption` (
 	`expense_id` text NOT NULL,
 	`user_id` text NOT NULL,
 	`amount_cents` integer NOT NULL,
@@ -24,11 +24,11 @@ CREATE TABLE `group` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`join_code` text NOT NULL,
-	`created_by` text NOT NULL,
+	`created_by_user` text NOT NULL,
 	`status` text DEFAULT 'open' NOT NULL,
 	`closed_at` integer,
 	`created_at` integer NOT NULL,
-	FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`created_by_user`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `group_join_code_unique` ON `group` (`join_code`);--> statement-breakpoint

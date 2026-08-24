@@ -1,7 +1,7 @@
 import { and, desc, eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { expense, expenseSplit } from '$lib/server/db/schema';
+import { expense, expenseConsumption } from '$lib/server/db/schema';
 
 export const load: PageServerLoad = async ({ params, locals, parent }) => {
 	const { group, members } = await parent();
@@ -13,26 +13,29 @@ export const load: PageServerLoad = async ({ params, locals, parent }) => {
 		.where(eq(expense.groupId, params.id))
 		.orderBy(desc(expense.createdAt));
 
-	const mySplits = await db
-		.select({ expenseId: expenseSplit.expenseId, amountCents: expenseSplit.amountCents })
-		.from(expenseSplit)
-		.innerJoin(expense, eq(expenseSplit.expenseId, expense.id))
-		.where(and(eq(expense.groupId, params.id), eq(expenseSplit.userId, userId)));
-	const mySplitByExpense = new Map(mySplits.map((s) => [s.expenseId, s.amountCents]));
+	const myConsumption = await db
+		.select({
+			expenseId: expenseConsumption.expenseId,
+			amountCents: expenseConsumption.amountCents
+		})
+		.from(expenseConsumption)
+		.innerJoin(expense, eq(expenseConsumption.expenseId, expense.id))
+		.where(and(eq(expense.groupId, params.id), eq(expenseConsumption.userId, userId)));
+	const myConsumptionByExpense = new Map(myConsumption.map((c) => [c.expenseId, c.amountCents]));
 
 	const memberNames = new Map(members.map((m) => [m.id, m.name]));
 
 	return {
 		expenses: expenseRows.map((e) => {
-			const paidShare = e.paidBy === userId ? e.amountCents : 0;
-			const owedShare = mySplitByExpense.get(e.id) ?? 0;
+			const paidCents = e.paidByUser === userId ? e.amountCents : 0;
+			const consumedCents = myConsumptionByExpense.get(e.id) ?? 0;
 			return {
 				id: e.id,
 				description: e.description,
 				amountCents: e.amountCents,
-				paidByName: memberNames.get(e.paidBy) ?? 'Unknown',
+				paidByName: e.paidByUser === userId ? 'you' : (memberNames.get(e.paidByUser) ?? 'Unknown'),
 				createdAt: e.createdAt,
-				myEffectCents: paidShare - owedShare
+				myEffectCents: paidCents - consumedCents
 			};
 		}),
 		isClosed: group.status === 'closed'

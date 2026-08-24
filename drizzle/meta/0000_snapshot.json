@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "3235d71d-bab0-4be1-9535-7f49fde4c749",
+  "id": "7b13aa27-046d-4a7d-8067-9743a0e7cbc1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "expense": {
@@ -35,15 +35,15 @@
           "notNull": true,
           "autoincrement": false
         },
-        "paid_by": {
-          "name": "paid_by",
+        "paid_by_user": {
+          "name": "paid_by_user",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "created_by": {
-          "name": "created_by",
+        "created_by_user": {
+          "name": "created_by_user",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -72,12 +72,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "expense_paid_by_user_id_fk": {
-          "name": "expense_paid_by_user_id_fk",
+        "expense_paid_by_user_user_id_fk": {
+          "name": "expense_paid_by_user_user_id_fk",
           "tableFrom": "expense",
           "tableTo": "user",
           "columnsFrom": [
-            "paid_by"
+            "paid_by_user"
           ],
           "columnsTo": [
             "id"
@@ -85,12 +85,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "expense_created_by_user_id_fk": {
-          "name": "expense_created_by_user_id_fk",
+        "expense_created_by_user_user_id_fk": {
+          "name": "expense_created_by_user_user_id_fk",
           "tableFrom": "expense",
           "tableTo": "user",
           "columnsFrom": [
-            "created_by"
+            "created_by_user"
           ],
           "columnsTo": [
             "id"
@@ -103,8 +103,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "expense_split": {
-      "name": "expense_split",
+    "expense_consumption": {
+      "name": "expense_consumption",
       "columns": {
         "expense_id": {
           "name": "expense_id",
@@ -130,9 +130,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "expense_split_expense_id_expense_id_fk": {
-          "name": "expense_split_expense_id_expense_id_fk",
-          "tableFrom": "expense_split",
+        "expense_consumption_expense_id_expense_id_fk": {
+          "name": "expense_consumption_expense_id_expense_id_fk",
+          "tableFrom": "expense_consumption",
           "tableTo": "expense",
           "columnsFrom": [
             "expense_id"
@@ -143,9 +143,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "expense_split_user_id_user_id_fk": {
-          "name": "expense_split_user_id_user_id_fk",
-          "tableFrom": "expense_split",
+        "expense_consumption_user_id_user_id_fk": {
+          "name": "expense_consumption_user_id_user_id_fk",
+          "tableFrom": "expense_consumption",
           "tableTo": "user",
           "columnsFrom": [
             "user_id"
@@ -158,12 +158,12 @@
         }
       },
       "compositePrimaryKeys": {
-        "expense_split_expense_id_user_id_pk": {
+        "expense_consumption_expense_id_user_id_pk": {
           "columns": [
             "expense_id",
             "user_id"
           ],
-          "name": "expense_split_expense_id_user_id_pk"
+          "name": "expense_consumption_expense_id_user_id_pk"
         }
       },
       "uniqueConstraints": {},
@@ -193,8 +193,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "created_by": {
-          "name": "created_by",
+        "created_by_user": {
+          "name": "created_by_user",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -233,12 +233,12 @@
         }
       },
       "foreignKeys": {
-        "group_created_by_user_id_fk": {
-          "name": "group_created_by_user_id_fk",
+        "group_created_by_user_user_id_fk": {
+          "name": "group_created_by_user_user_id_fk",
           "tableFrom": "group",
           "tableTo": "user",
           "columnsFrom": [
-            "created_by"
+            "created_by_user"
           ],
           "columnsTo": [
             "id"
