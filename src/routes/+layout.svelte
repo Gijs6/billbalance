@@ -2,6 +2,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import '$lib/styles/app.css';
 	import { resolve } from '$app/paths';
+	import Toast from '$lib/components/Toast.svelte';
 	import type { LayoutProps } from './$types';
 
 	let { data, children }: LayoutProps = $props();
@@ -28,4 +29,7 @@
 	<main class="layout__main">
 		{@render children()}
 	</main>
+	{#if data.flash}
+		<Toast message={data.flash} />
+	{/if}
 </div>

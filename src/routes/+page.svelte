@@ -36,7 +36,7 @@
 		</p>
 	{/if}
 {:else}
-	<h1>splot</h1>
+	<h1>billbalance</h1>
 	<p>Split shared expenses</p>
 	<p>
 		<a class="button" href={resolve('/login')}>Log in</a>
