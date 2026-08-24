@@ -8,29 +8,48 @@ import * as schema from '$lib/server/db/schema';
 import { generateDbId } from '$lib/server/id';
 import { sendPasswordResetEmail } from '$lib/server/email';
 
-export const auth = betterAuth({
-	baseURL: env.ORIGIN,
-	secret: env.BETTER_AUTH_SECRET,
-	database: drizzleAdapter(db, { provider: 'sqlite', schema }),
-	advanced: {
-		database: { generateId: () => generateDbId() }
-	},
-	session: {
-		expiresIn: 60 * 60 * 24 * 30,
-		updateAge: 60 * 60 * 24 * 15
-	},
-	emailAndPassword: {
-		enabled: true,
-		minPasswordLength: 8,
-		maxPasswordLength: 255,
-		revokeSessionsOnPasswordReset: true,
-		sendResetPassword: async ({ user, token }, request) => {
-			const origin = request ? new URL(request.url).origin : env.ORIGIN;
-			await sendPasswordResetEmail(user.email, `${origin}/reset-password/${token}`);
-		}
-	},
-	user: {
-		deleteUser: { enabled: true }
-	},
-	plugins: [sveltekitCookies(getRequestEvent)]
+function createAuth() {
+	return betterAuth({
+		baseURL: env.ORIGIN,
+		secret: env.BETTER_AUTH_SECRET,
+		database: drizzleAdapter(db, { provider: 'sqlite', schema }),
+		advanced: {
+			database: { generateId: () => generateDbId() }
+		},
+		session: {
+			expiresIn: 60 * 60 * 24 * 30,
+			updateAge: 60 * 60 * 24 * 15
+		},
+		emailAndPassword: {
+			enabled: true,
+			minPasswordLength: 8,
+			maxPasswordLength: 255,
+			revokeSessionsOnPasswordReset: true,
+			sendResetPassword: async ({ user, token }, request) => {
+				const origin = request ? new URL(request.url).origin : env.ORIGIN;
+				await sendPasswordResetEmail(user.email, `${origin}/reset-password/${token}`);
+			}
+		},
+		user: {
+			deleteUser: { enabled: true }
+		},
+		plugins: [sveltekitCookies(getRequestEvent)]
+	});
+}
+
+type Auth = ReturnType<typeof createAuth>;
+
+let instance: Auth | undefined;
+
+function getInstance(): Auth {
+	if (!instance) instance = createAuth();
+	return instance;
+}
+
+export const auth: Auth = new Proxy({} as Auth, {
+	get(_target, prop) {
+		const real = getInstance();
+		const value = Reflect.get(real, prop);
+		return typeof value === 'function' ? value.bind(real) : value;
+	}
 });
