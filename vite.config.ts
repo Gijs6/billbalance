@@ -1,5 +1,7 @@
 import adapter from '@sveltejs/adapter-node';
 import { sveltekit } from '@sveltejs/kit/vite';
+import browserslist from 'browserslist';
+import { browserslistToTargets } from 'lightningcss';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -7,6 +9,15 @@ export default defineConfig({
 		host: true,
 		port: 8000,
 		allowedHosts: true
+	},
+	css: {
+		transformer: 'lightningcss',
+		lightningcss: {
+			targets: browserslistToTargets(browserslist())
+		}
+	},
+	build: {
+		cssMinify: 'lightningcss'
 	},
 	plugins: [
 		sveltekit({

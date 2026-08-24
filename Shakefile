@@ -2,30 +2,31 @@
 
 setup() {
   i:npm_install
-  npm run db:migrate
+  migrate
 }
 
 serve() {
   npm run dev
 }
 
-seed() {
-  npm run db:seed
+migrate() {
+  case "$1" in
+    "") npm run db:migrate ;;
+    add) npm run db:generate ;;
+    *) _shake_err "usage: shake migrate [add]" ;;
+  esac
 }
 
-seed_big() {
-  npm run db:seed:big
+seed() {
+  npm run db:seed -- "$@"
 }
 
 test() {
   npm run test
 }
 
-lint() {
-  npm run lint
-}
-
 check() {
+  npm run lint
   npm run check
 }
 
@@ -34,6 +35,19 @@ build() {
 }
 
 deploy() {
+  local force=0
+  for arg in "$@"; do
+    [ "$arg" = "--force" ] && force=1
+  done
+
+  if ! test; then
+    if [ "$force" -eq 1 ]; then
+      echo "shake: tests failed, deploying anyway (--force)" >&2
+    else
+      _shake_err "tests failed; run 'shake deploy --force' to deploy anyway"
+    fi
+  fi
+
   build
   g:deploy
 }
