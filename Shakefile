@@ -1,0 +1,39 @@
+#!/bin/bash
+
+setup() {
+  i:npm_install
+  npm run db:migrate
+}
+
+serve() {
+  npm run dev
+}
+
+seed() {
+  npm run db:seed
+}
+
+seed_big() {
+  npm run db:seed:big
+}
+
+test() {
+  npm run test
+}
+
+lint() {
+  npm run lint
+}
+
+check() {
+  npm run check
+}
+
+build() {
+  npm run build
+}
+
+deploy() {
+  build
+  g:deploy
+}
