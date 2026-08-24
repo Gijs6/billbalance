@@ -1,4 +1,4 @@
-name: splot
-image: gijs6/splot
+name: billbalance
+image: gijs6/billbalance
 registry: ghcr.io
 host: dec

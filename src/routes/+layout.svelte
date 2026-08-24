@@ -14,7 +14,7 @@
 <div class="layout">
 	{#if data.user}
 		<nav class="nav" aria-label="Main">
-			<a class="nav__brand" href={resolve('/')}>splot</a>
+			<a class="nav__brand" href={resolve('/')}>billbalance</a>
 			<ul class="nav__links">
 				<li><span class="nav__link">{data.user.name}</span></li>
 				<li>

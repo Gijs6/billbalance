@@ -3,5 +3,5 @@
 </script>
 
 <svelte:head>
-	<title>{title ? `${title} - splot` : 'splot'}</title>
+	<title>{title ? `${title} - billbalance` : 'billbalance'}</title>
 </svelte:head>
