@@ -17,7 +17,7 @@
 		<nav class="nav" aria-label="Main">
 			<a class="nav__brand" href={resolve('/')}>billbalance</a>
 			<ul class="nav__links">
-				<li><span class="nav__link">{data.user.name}</span></li>
+				<li><a class="nav__link" href={resolve('/account')}>{data.user.name}</a></li>
 				<li>
 					<form method="POST" action="/logout">
 						<button type="submit" class="button button--secondary button--small">Log out</button>

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { eq } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 import type { RequestEvent } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { session, user, type Session, type User } from '$lib/server/db/schema';
@@ -55,6 +55,10 @@ export async function invalidateSession(sessionId: string) {
 
 export async function invalidateAllSessionsForUser(userId: string) {
 	await db.delete(session).where(eq(session.userId, userId));
+}
+
+export async function invalidateOtherSessionsForUser(userId: string, exceptSessionId: string) {
+	await db.delete(session).where(and(eq(session.userId, userId), ne(session.id, exceptSessionId)));
 }
 
 export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date) {
