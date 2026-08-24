@@ -7,15 +7,6 @@
 
 	const tabs = $derived(
 		[
-			...(data.group.status === 'closed'
-				? [
-						{
-							key: 'settlement',
-							label: 'Settlement',
-							href: resolve('/groups/[id]/settlement', { id: data.group.id })
-						}
-					]
-				: []),
 			{
 				key: 'expenses',
 				label: 'Expenses',
@@ -25,6 +16,11 @@
 				key: 'balances',
 				label: 'Balances',
 				href: resolve('/groups/[id]/balances', { id: data.group.id })
+			},
+			{
+				key: 'settlement',
+				label: 'Settlement',
+				href: resolve('/groups/[id]/settlement', { id: data.group.id })
 			},
 			{
 				key: 'members',
@@ -46,14 +42,19 @@
 </div>
 
 {#if data.group.status === 'closed'}
-	<p class="tag">This group is closed and read-only.</p>
+	<p class="tag tag--block">This group is closed and read-only.</p>
 {/if}
 
 <nav class="tabs" aria-label="Group sections">
 	<ul class="tabs__list">
 		{#each tabs as tab (tab.key)}
 			<li>
-				<a class="tabs__link" href={tab.href} aria-current={tab.current ? 'page' : undefined}>
+				<a
+					class="tabs__link"
+					class:tabs__link--current={tab.current}
+					href={tab.href}
+					aria-current={tab.current ? 'page' : undefined}
+				>
 					{tab.label}
 				</a>
 			</li>

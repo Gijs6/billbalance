@@ -3,6 +3,7 @@
 	import { resolve } from '$app/paths';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { ActionData, PageData } from './$types';
+	import { untrack } from 'svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -12,7 +13,7 @@
 			: resolve('/register')
 	);
 
-	let showEmailLogin = $state(data.dummyUsers.length === 0);
+	let showEmailLogin = $state(untrack(() => data.dummyUsers.length === 0));
 </script>
 
 <PageTitle title="Log in" />
@@ -30,7 +31,7 @@
 	</div>
 
 	<p>
-		<button type="button" class="link-button" onclick={() => (showEmailLogin = true)}>
+		<button type="button" class="button button--link" onclick={() => (showEmailLogin = true)}>
 			Log in with email instead
 		</button>
 	</p>
@@ -64,7 +65,7 @@
 
 	{#if data.dummyUsers.length > 0}
 		<p>
-			<button type="button" class="link-button" onclick={() => (showEmailLogin = false)}>
+			<button type="button" class="button button--link" onclick={() => (showEmailLogin = false)}>
 				Back to dummy user login
 			</button>
 		</p>
