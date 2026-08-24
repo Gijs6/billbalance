@@ -1,11 +1,10 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { invalidateSession, deleteSessionTokenCookie } from '$lib/server/auth';
+import { auth } from '$lib/server/auth';
 
 export const POST: RequestHandler = async (event) => {
 	if (event.locals.session) {
-		await invalidateSession(event.locals.session.id);
+		await auth.api.signOut({ headers: event.request.headers });
 	}
-	deleteSessionTokenCookie(event);
 	redirect(302, '/login');
 };

@@ -1,16 +1,17 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import { eq, or, like } from 'drizzle-orm';
+import { APIError } from 'better-auth/api';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
-import { verifyPassword, createSession, setSessionTokenCookie } from '$lib/server/auth';
+import { auth } from '$lib/server/auth';
 import { safeRedirectTarget } from '$lib/server/safe-redirect';
 
-const DUMMY_EMAIL_PATTERNS = ['dummy_%@test.com', 'big_%@test.com'];
+const DUMMY_EMAIL_PATTERNS = ['seed%@test.com'];
 
 function isDummyUser(email: string): boolean {
-	return /^(dummy_|big_)[^@]+@test\.com$/.test(email);
+	return /^seed[^@]+@test\.com$/.test(email);
 }
 
 export const load: PageServerLoad = async ({ locals, url }) => {
@@ -37,14 +38,17 @@ export const actions: Actions = {
 			return fail(400, { message: 'Please enter your email and password.', email });
 		}
 
-		const existing = db.select().from(user).where(eq(user.email, email.toLowerCase().trim())).get();
-
-		if (!existing || !(await verifyPassword(password, existing.passwordHash))) {
-			return fail(400, { message: 'Incorrect email or password.', email });
+		try {
+			await auth.api.signInEmail({
+				body: { email: email.toLowerCase().trim(), password },
+				headers: event.request.headers
+			});
+		} catch (error) {
+			if (error instanceof APIError) {
+				return fail(400, { message: 'Incorrect email or password.', email });
+			}
+			throw error;
 		}
-
-		const { token, expiresAt } = await createSession(existing.id);
-		setSessionTokenCookie(event, token, expiresAt);
 
 		redirect(303, safeRedirectTarget(event.url.searchParams.get('redirectTo')));
 	},
@@ -59,8 +63,10 @@ export const actions: Actions = {
 		const existing = db.select().from(user).where(eq(user.id, userId)).get();
 		if (!existing || !isDummyUser(existing.email)) return fail(400);
 
-		const { token, expiresAt } = await createSession(existing.id);
-		setSessionTokenCookie(event, token, expiresAt);
+		await auth.api.signInEmail({
+			body: { email: existing.email, password: 'testtest' },
+			headers: event.request.headers
+		});
 
 		redirect(303, safeRedirectTarget(event.url.searchParams.get('redirectTo')));
 	}

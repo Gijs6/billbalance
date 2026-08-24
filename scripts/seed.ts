@@ -1,8 +1,10 @@
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { eq } from 'drizzle-orm';
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import * as schema from '../src/lib/server/db/schema';
-import { hashPassword } from '../src/lib/server/password';
+import { generateDbId } from '../src/lib/server/id';
 import { splitEqual } from '../src/lib/money';
 
 const DEFAULT_SIZE = 5;
@@ -161,6 +163,13 @@ function parseSize(): number {
 const { client, db } = openDb();
 const { user, group, groupMember, expense, expenseConsumption } = schema;
 
+const auth = betterAuth({
+	baseURL: process.env.ORIGIN,
+	database: drizzleAdapter(db, { provider: 'sqlite', schema }),
+	advanced: { database: { generateId: () => generateDbId() } },
+	emailAndPassword: { enabled: true, minPasswordLength: 8, maxPasswordLength: 255 }
+});
+
 async function seed() {
 	const userCount = parseSize();
 	const expenseCount = userCount * EXPENSES_PER_USER;
@@ -177,11 +186,9 @@ async function seed() {
 			continue;
 		}
 
-		const passwordHash = await hashPassword('testtest');
-		const [created] = await db
-			.insert(user)
-			.values({ name: `${names[i - 1]} (${emailPrefix}_${suffix})`, email, passwordHash })
-			.returning();
+		const { user: created } = await auth.api.signUpEmail({
+			body: { name: `${names[i - 1]} (${emailPrefix}_${suffix})`, email, password: 'testtest' }
+		});
 		userIds.push(created.id);
 	}
 

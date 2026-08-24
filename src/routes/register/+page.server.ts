@@ -1,9 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { APIError } from 'better-auth/api';
 import type { Actions, PageServerLoad } from './$types';
-import { db } from '$lib/server/db';
-import { user } from '$lib/server/db/schema';
-import { hashPassword, createSession, setSessionTokenCookie } from '$lib/server/auth';
+import { auth } from '$lib/server/auth';
 import { safeRedirectTarget } from '$lib/server/safe-redirect';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -31,19 +29,18 @@ export const actions: Actions = {
 		}
 
 		const normalizedEmail = email.toLowerCase().trim();
-		const existing = db.select().from(user).where(eq(user.email, normalizedEmail)).get();
-		if (existing) {
-			return fail(400, { message: 'An account with that email already exists.', email });
+
+		try {
+			await auth.api.signUpEmail({
+				body: { name: name.trim(), email: normalizedEmail, password },
+				headers: event.request.headers
+			});
+		} catch (error) {
+			if (error instanceof APIError) {
+				return fail(400, { message: 'An account with that email already exists.', email });
+			}
+			throw error;
 		}
-
-		const passwordHash = await hashPassword(password);
-		const [newUser] = await db
-			.insert(user)
-			.values({ name: name.trim(), email: normalizedEmail, passwordHash })
-			.returning();
-
-		const { token, expiresAt } = await createSession(newUser.id);
-		setSessionTokenCookie(event, token, expiresAt);
 
 		redirect(303, safeRedirectTarget(event.url.searchParams.get('redirectTo')));
 	}

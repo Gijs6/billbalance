@@ -1,28 +1,10 @@
-import { error, fail, redirect } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
-import type { Actions, PageServerLoad } from './$types';
-import { db } from '$lib/server/db';
-import { user } from '$lib/server/db/schema';
-import { hashPassword, invalidateAllSessionsForUser } from '$lib/server/auth';
-import {
-	validatePasswordResetToken,
-	invalidatePasswordResetToken
-} from '$lib/server/password-reset';
-
-export const load: PageServerLoad = async ({ params }) => {
-	const userId = await validatePasswordResetToken(params.token);
-	if (!userId) {
-		error(400, 'This password reset link is invalid or has expired.');
-	}
-};
+import { fail, redirect } from '@sveltejs/kit';
+import { APIError } from 'better-auth/api';
+import type { Actions } from './$types';
+import { auth } from '$lib/server/auth';
 
 export const actions: Actions = {
 	default: async ({ params, request }) => {
-		const userId = await validatePasswordResetToken(params.token);
-		if (!userId) {
-			error(400, 'This password reset link is invalid or has expired.');
-		}
-
 		const form = await request.formData();
 		const password = form.get('password');
 
@@ -30,11 +12,16 @@ export const actions: Actions = {
 			return fail(400, { message: 'Password must be at least 8 characters.' });
 		}
 
-		const passwordHash = await hashPassword(password);
-		await db.update(user).set({ passwordHash }).where(eq(user.id, userId));
-
-		await invalidatePasswordResetToken(params.token);
-		await invalidateAllSessionsForUser(userId);
+		try {
+			await auth.api.resetPassword({
+				body: { newPassword: password, token: params.token }
+			});
+		} catch (error) {
+			if (error instanceof APIError) {
+				return fail(400, { message: 'This password reset link is invalid or has expired.' });
+			}
+			throw error;
+		}
 
 		redirect(302, '/login');
 	}
