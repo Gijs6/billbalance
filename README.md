@@ -3,8 +3,8 @@
 ```sh
 docker run -d \
   -p 3000:3000 \
-  -v splot-data:/data \
-  -e ORIGIN=https://splot.example.com \
+  -v billbalance-data:/data \
+  -e ORIGIN=https://billbalance.example.com \
   -e SMTP_HOST=smtp.example.com \
   -e SMTP_PORT=587 \
   -e SMTP_USER=you@example.com \
