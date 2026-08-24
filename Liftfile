@@ -1,0 +1,4 @@
+name: splot
+image: gijs6/splot
+registry: ghcr.io
+host: dec
