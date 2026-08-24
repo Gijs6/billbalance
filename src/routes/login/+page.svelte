@@ -48,6 +48,7 @@
 				id="email"
 				type="email"
 				name="email"
+				autocomplete="email"
 				required
 				value={form?.email ?? ''}
 			/>
@@ -55,7 +56,14 @@
 
 		<div class="form__field">
 			<label class="form__label" for="password">Password</label>
-			<input class="form__input" id="password" type="password" name="password" required />
+			<input
+				class="form__input"
+				id="password"
+				type="password"
+				name="password"
+				autocomplete="current-password"
+				required
+			/>
 		</div>
 
 		<div class="form__actions">

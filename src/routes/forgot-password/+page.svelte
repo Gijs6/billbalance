@@ -17,7 +17,14 @@
 	<form method="POST" class="form" use:enhance>
 		<div class="form__field">
 			<label class="form__label" for="email">Email</label>
-			<input class="form__input" id="email" type="email" name="email" required />
+			<input
+				class="form__input"
+				id="email"
+				type="email"
+				name="email"
+				autocomplete="email"
+				required
+			/>
 		</div>
 
 		<div class="form__actions">

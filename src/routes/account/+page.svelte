@@ -26,6 +26,7 @@
 				id="name"
 				type="text"
 				name="name"
+				autocomplete="name"
 				required
 				maxlength="100"
 				value={data.user.name}

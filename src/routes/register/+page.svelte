@@ -24,7 +24,15 @@
 
 	<div class="form__field">
 		<label class="form__label" for="name">Name</label>
-		<input class="form__input" id="name" type="text" name="name" required maxlength="100" />
+		<input
+			class="form__input"
+			id="name"
+			type="text"
+			name="name"
+			autocomplete="name"
+			required
+			maxlength="100"
+		/>
 	</div>
 
 	<div class="form__field">
@@ -34,6 +42,7 @@
 			id="email"
 			type="email"
 			name="email"
+			autocomplete="email"
 			required
 			value={form?.email ?? ''}
 		/>
@@ -46,6 +55,7 @@
 			id="password"
 			type="password"
 			name="password"
+			autocomplete="new-password"
 			required
 			minlength="8"
 		/>
