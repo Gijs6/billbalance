@@ -23,6 +23,8 @@
 	--color-tag-pending-bg: #f7efdc;
 	--color-tag-neutral: #55555a;
 	--color-tag-neutral-bg: #eeeef0;
+	--color-tag-negative: #c23b30;
+	--color-tag-negative-bg: #f9e5e3;
 
 	--color-danger: #c23b30;
 	--color-danger-strong: #96271e;
@@ -177,6 +179,13 @@ input[type='checkbox'] {
 	margin: 0;
 }
 
+.page-header__title {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	flex-wrap: wrap;
+}
+
 .page-header__actions {
 	display: flex;
 	gap: var(--space-2);
@@ -329,6 +338,12 @@ input[type='checkbox'] {
 	font-size: var(--font-size-sm);
 }
 
+.settlement-summary {
+	margin-bottom: var(--space-3);
+	text-align: right;
+	font-weight: 600;
+}
+
 .form__actions {
 	display: flex;
 	gap: var(--space-2);
@@ -343,17 +358,16 @@ input[type='checkbox'] {
 }
 
 .form__checkbox-row {
-	display: flex;
+	display: grid;
+	grid-template-columns: 1rem 12rem 8rem;
 	align-items: center;
 	gap: var(--space-3);
 }
 
-.form__checkbox-row label {
-	min-width: 8rem;
-}
-
-.form__checkbox-row .form__input {
-	max-width: 8rem;
+.form__checkbox-row input[type='checkbox'] {
+	width: 1rem;
+	height: 1rem;
+	margin: 0;
 }
 
 .list {
@@ -526,9 +540,10 @@ details.balance-card summary.list-item {
 	color: var(--color-tag-pending);
 }
 
-.tag--block {
-	display: block;
-	margin-bottom: var(--space-4);
+.tag--negative {
+	border-color: var(--color-tag-negative);
+	background: var(--color-tag-negative-bg);
+	color: var(--color-tag-negative);
 }
 
 .card {
@@ -557,6 +572,17 @@ details.balance-card summary.list-item {
 	padding-bottom: var(--space-2);
 	margin-bottom: var(--space-3);
 	border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.section__subtitle {
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+	color: var(--color-text-muted);
+	margin-bottom: var(--space-2);
+}
+
+.section__subsection + .section__subsection {
+	margin-top: var(--space-4);
 }
 
 .settlement-list {
@@ -626,6 +652,28 @@ details.balance-card summary.list-item {
 	margin-top: var(--space-5);
 	padding-top: var(--space-4);
 	border-top: 1px solid var(--color-border-subtle);
+}
+
+.modal {
+	margin: auto;
+	padding: var(--space-4);
+	border: 1px solid var(--color-border);
+	background: var(--color-bg);
+	color: var(--color-text);
+	max-width: 28rem;
+	width: calc(100% - var(--space-5));
+}
+
+.modal::backdrop {
+	background: rgb(0 0 0 / 50%);
+}
+
+.modal h2 {
+	margin-top: 0;
+}
+
+.modal .form__error {
+	margin-bottom: 0;
 }
 
 .empty-state {

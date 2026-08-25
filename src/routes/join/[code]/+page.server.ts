@@ -17,7 +17,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	return {
 		group: { id: found.id, name: found.name },
-		alreadyMember
+		alreadyMember,
+		isClosed: found.status === 'closed'
 	};
 };
 
@@ -32,6 +33,9 @@ export const actions: Actions = {
 			.from(group)
 			.where(eq(group.joinCode, normalizeHumanCode(params.code)));
 		if (!found) error(404, 'This join link is invalid.');
+		if (found.status === 'closed') {
+			error(403, 'This group is closed and is no longer accepting new members.');
+		}
 
 		await addGroupMember(found.id, locals.user.id);
 

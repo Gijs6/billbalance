@@ -55,7 +55,8 @@ function groupByCreditorDebtor(members: GroupMemberInfo[], edges: EdgeLike[]) {
 			name: m.name,
 			totalCents: owedTo.get(m.id)!.reduce((sum, edge) => sum + edge.amountCents, 0),
 			edges: owedTo.get(m.id)!
-		}));
+		}))
+		.sort((a, b) => b.totalCents - a.totalCents);
 
 	const debtors = members
 		.filter((m) => owedBy.has(m.id))
@@ -64,7 +65,8 @@ function groupByCreditorDebtor(members: GroupMemberInfo[], edges: EdgeLike[]) {
 			name: m.name,
 			totalCents: owedBy.get(m.id)!.reduce((sum, edge) => sum + edge.amountCents, 0),
 			edges: owedBy.get(m.id)!
-		}));
+		}))
+		.sort((a, b) => b.totalCents - a.totalCents);
 
 	return { creditors, debtors };
 }

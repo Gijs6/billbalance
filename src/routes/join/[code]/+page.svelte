@@ -28,6 +28,8 @@
 {:else if data.alreadyMember}
 	<p>You're already a member of this group.</p>
 	<p><a class="button" href={resolve('/groups/[id]', { id: data.group.id })}>Go to group</a></p>
+{:else if data.isClosed}
+	<p>This group is closed and is no longer accepting new members.</p>
 {:else}
 	<form method="POST" use:enhance>
 		<button type="submit" class="button">Join {data.group.name}</button>

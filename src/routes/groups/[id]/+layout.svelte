@@ -27,12 +27,32 @@
 				label: 'Members',
 				href: resolve('/groups/[id]/members', { id: data.group.id })
 			}
-		].map((tab) => ({ ...tab, current: page.url.pathname.startsWith(tab.href) }))
+		]
+			.sort((a, b) => {
+				if (data.group.status !== 'closed') return 0;
+				if (a.key === 'settlement') return -1;
+				if (b.key === 'settlement') return 1;
+				return 0;
+			})
+			.map((tab) => ({ ...tab, current: page.url.pathname.startsWith(tab.href) }))
 	);
 </script>
 
 <div class="page-header">
-	<h1>{data.group.name}</h1>
+	<div class="page-header__title">
+		<h1>{data.group.name}</h1>
+		{#if data.group.status === 'closed'}
+			{#if data.allSettled}
+				<span class="tag tag--paid" title="This group is closed and all payments are settled."
+					>Completed</span
+				>
+			{:else}
+				<span class="tag tag--pending" title="This group is closed and read-only.">
+					Waiting for payments
+				</span>
+			{/if}
+		{/if}
+	</div>
 	<div class="page-header__actions">
 		<a
 			class="button button--secondary"
@@ -40,10 +60,6 @@
 		>
 	</div>
 </div>
-
-{#if data.group.status === 'closed'}
-	<p class="tag tag--block">This group is closed and read-only.</p>
-{/if}
 
 <nav class="tabs" aria-label="Group sections">
 	<ul class="tabs__list">
