@@ -68,13 +68,11 @@
 		}
 	}
 
-	$effect(() => {
-		for (const m of members) {
-			if (consumption[m.id].checked && parseEuros(consumption[m.id].consumed) === 0) {
-				consumption[m.id].checked = false;
-			}
+	function onConsumedInput(id: string) {
+		if (parseEuros(consumption[id].consumed) === 0) {
+			consumption[id].checked = false;
 		}
-	});
+	}
 </script>
 
 <form method="POST" {action} class="form form--wide" use:enhance>
@@ -146,6 +144,7 @@
 						aria-label="{member.name}'s consumed amount in euros"
 						disabled={!consumption[member.id].checked}
 						bind:value={consumption[member.id].consumed}
+						oninput={() => onConsumedInput(member.id)}
 					/>
 				</div>
 			{/each}
