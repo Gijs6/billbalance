@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
+	import StatusLabel from '$lib/components/StatusLabel.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -12,8 +14,8 @@
 	<div class="page-header">
 		<h1>Your groups</h1>
 		<div class="page-header__actions">
-			<a class="button button--secondary" href={resolve('/join')}>Join group</a>
-			<a class="button" href={resolve('/groups/new')}>New group</a>
+			<Button variant="secondary" href={resolve('/join')}>Join group</Button>
+			<Button href={resolve('/groups/new')}>New group</Button>
 		</div>
 	</div>
 
@@ -24,7 +26,7 @@
 					<a class="list-item" href={resolve('/groups/[id]', { id: group.id })}>
 						<span class="list-item__title">{group.name}</span>
 						{#if group.status === 'closed'}
-							<span class="tag">Closed</span>
+							<StatusLabel>Closed</StatusLabel>
 						{/if}
 					</a>
 				</li>
@@ -39,7 +41,7 @@
 	<h1>billbalance</h1>
 	<p>Split shared expenses</p>
 	<p>
-		<a class="button" href={resolve('/login')}>Log in</a>
-		<a class="button button--secondary" href={resolve('/register')}>Sign up</a>
+		<Button href={resolve('/login')}>Log in</Button>
+		<Button variant="secondary" href={resolve('/register')}>Sign up</Button>
 	</p>
 {/if}

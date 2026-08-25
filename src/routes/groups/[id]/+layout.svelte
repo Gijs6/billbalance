@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
+	import Button from '$lib/components/Button.svelte';
+	import StatusLabel from '$lib/components/StatusLabel.svelte';
 	import type { LayoutProps } from './$types';
 
 	let { data, children }: LayoutProps = $props();
@@ -43,21 +45,20 @@
 		<h1>{data.group.name}</h1>
 		{#if data.group.status === 'closed'}
 			{#if data.allSettled}
-				<span class="tag tag--paid" title="This group is closed and all payments are settled."
-					>Completed</span
-				>
+				<StatusLabel variant="paid" title="This group is closed and all payments are settled.">
+					Completed
+				</StatusLabel>
 			{:else}
-				<span class="tag tag--pending" title="This group is closed and read-only.">
+				<StatusLabel variant="pending" title="This group is closed and read-only.">
 					Waiting for payments
-				</span>
+				</StatusLabel>
 			{/if}
 		{/if}
 	</div>
 	<div class="page-header__actions">
-		<a
-			class="button button--secondary"
-			href={resolve('/groups/[id]/settings', { id: data.group.id })}>Settings</a
-		>
+		<Button variant="secondary" href={resolve('/groups/[id]/settings', { id: data.group.id })}>
+			Settings
+		</Button>
 	</div>
 </div>
 

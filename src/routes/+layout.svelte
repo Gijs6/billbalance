@@ -2,6 +2,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import '$lib/styles/app.css';
 	import { resolve } from '$app/paths';
+	import Button from '$lib/components/Button.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import type { LayoutProps } from './$types';
 
@@ -20,7 +21,7 @@
 				<li><a class="nav__link" href={resolve('/account')}>{data.user.name}</a></li>
 				<li>
 					<form method="POST" action="/logout">
-						<button type="submit" class="button button--secondary button--small">Log out</button>
+						<Button type="submit" variant="secondary" small>Log out</Button>
 					</form>
 				</li>
 			</ul>

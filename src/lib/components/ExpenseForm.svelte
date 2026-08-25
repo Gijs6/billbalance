@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { centsToInputValue, parseEuros, splitEqual } from '$lib/money';
+	import Button from './Button.svelte';
+	import FieldLabel from './FieldLabel.svelte';
 
 	interface MemberInfo {
 		id: string;
@@ -95,7 +97,7 @@
 	{/if}
 
 	<div class="form__field">
-		<label class="form__label" for="description">Description</label>
+		<FieldLabel for="description">Description</FieldLabel>
 		<input
 			class="form__input"
 			id="description"
@@ -108,7 +110,7 @@
 	</div>
 
 	<div class="form__field">
-		<label class="form__label" for="amount">Total amount (€)</label>
+		<FieldLabel for="amount">Total amount (€)</FieldLabel>
 		<input
 			class="form__input"
 			id="amount"
@@ -122,7 +124,7 @@
 	</div>
 
 	<div class="form__field">
-		<label class="form__label" for="paidByUser">Paid by</label>
+		<FieldLabel for="paidByUser">Paid by</FieldLabel>
 		<select class="form__select" id="paidByUser" name="paidByUser" bind:value={paidByUser} required>
 			{#each members as member (member.id)}
 				<option value={member.id}>{memberLabel(member)}</option>
@@ -136,9 +138,7 @@
 			Choose who consumed part of this expense, and how much. Use "Split equally" to split evenly
 			among the selected members.
 		</p>
-		<button type="button" class="button button--secondary button--block" onclick={equalize}>
-			Split equally
-		</button>
+		<Button variant="secondary" block onclick={equalize}>Split equally</Button>
 		<div class="form__checkbox-group">
 			{#each members as member (member.id)}
 				<div class="form__checkbox-row">
@@ -168,6 +168,6 @@
 	</fieldset>
 
 	<div class="form__actions">
-		<button type="submit" class="button">{submitLabel}</button>
+		<Button type="submit">{submitLabel}</Button>
 	</div>
 </form>

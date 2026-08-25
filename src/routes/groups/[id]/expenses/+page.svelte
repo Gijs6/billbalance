@@ -3,6 +3,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import BalanceLabel from '$lib/components/BalanceLabel.svelte';
+	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { PageData } from './$types';
 
@@ -20,7 +21,7 @@
 
 {#if !data.isClosed}
 	<p class="form__actions">
-		<a class="button" href={resolve('/groups/[id]/expenses/new', { id: groupId })}>Add expense</a>
+		<Button href={resolve('/groups/[id]/expenses/new', { id: groupId })}>Add expense</Button>
 	</p>
 {:else}
 	<p class="form__hint">This group is closed. No new expenses can be added.</p>

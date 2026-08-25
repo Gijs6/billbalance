@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
+	import Button from '$lib/components/Button.svelte';
+	import FieldLabel from '$lib/components/FieldLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { ActionData, PageData } from './$types';
 	import { untrack } from 'svelte';
@@ -25,15 +27,15 @@
 		{#each data.dummyUsers as dummyUser (dummyUser.id)}
 			<form method="POST" action="?/dummy" use:enhance>
 				<input type="hidden" name="userId" value={dummyUser.id} />
-				<button type="submit" class="button button--secondary">{dummyUser.name}</button>
+				<Button type="submit" variant="secondary">{dummyUser.name}</Button>
 			</form>
 		{/each}
 	</div>
 
 	<p>
-		<button type="button" class="button button--link" onclick={() => (showEmailLogin = true)}>
+		<Button type="button" variant="link" onclick={() => (showEmailLogin = true)}>
 			Log in with email instead
-		</button>
+		</Button>
 	</p>
 {:else}
 	<form method="POST" action="?/login" class="form" use:enhance>
@@ -42,7 +44,7 @@
 		{/if}
 
 		<div class="form__field">
-			<label class="form__label" for="email">Email</label>
+			<FieldLabel for="email">Email</FieldLabel>
 			<input
 				class="form__input"
 				id="email"
@@ -55,7 +57,7 @@
 		</div>
 
 		<div class="form__field">
-			<label class="form__label" for="password">Password</label>
+			<FieldLabel for="password">Password</FieldLabel>
 			<input
 				class="form__input"
 				id="password"
@@ -67,15 +69,15 @@
 		</div>
 
 		<div class="form__actions">
-			<button type="submit" class="button">Log in</button>
+			<Button type="submit">Log in</Button>
 		</div>
 	</form>
 
 	{#if data.dummyUsers.length > 0}
 		<p>
-			<button type="button" class="button button--link" onclick={() => (showEmailLogin = false)}>
+			<Button type="button" variant="link" onclick={() => (showEmailLogin = false)}>
 				Back to dummy user login
-			</button>
+			</Button>
 		</p>
 	{/if}
 {/if}

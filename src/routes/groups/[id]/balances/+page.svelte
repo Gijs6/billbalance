@@ -3,6 +3,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import BalanceLabel, { balanceLabelClass } from '$lib/components/BalanceLabel.svelte';
+	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { PageData } from './$types';
 
@@ -23,9 +24,7 @@
 	</p>
 {:else}
 	<p class="form__actions">
-		<a class="button" href={resolve('/groups/[id]/settlement', { id: groupId })}
-			>Settle group balance</a
-		>
+		<Button href={resolve('/groups/[id]/settlement', { id: groupId })}>Settle group balance</Button>
 	</p>
 {/if}
 
@@ -35,15 +34,7 @@
 			<details class="balance-card">
 				<summary class="list-item">
 					<span class="list-item__title">{member.id === data.user?.id ? 'You' : member.name}</span>
-					<BalanceLabel cents={member.balanceCents}>
-						{#snippet positive()}
-							is owed <span class="balance">{formatCents(member.balanceCents)}</span>
-						{/snippet}
-						{#snippet negative()}
-							owes <span class="balance">{formatCents(-member.balanceCents)}</span>
-						{/snippet}
-						{#snippet zero()}settled up{/snippet}
-					</BalanceLabel>
+					<BalanceLabel cents={member.balanceCents} isCurrentUser={member.id === data.user?.id} />
 				</summary>
 				<div class="balance-equation">
 					<div class="balance-equation__grid">

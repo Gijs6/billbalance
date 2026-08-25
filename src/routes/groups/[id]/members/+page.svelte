@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { PageData } from './$types';
 
@@ -38,9 +39,9 @@
 				aria-label="Join link"
 				onclick={(e) => e.currentTarget.select()}
 			/>
-			<button type="button" class="button button--secondary" onclick={copyLink}>
+			<Button variant="secondary" onclick={copyLink}>
 				{copied ? 'Copied' : 'Copy'}
-			</button>
+			</Button>
 		</div>
 	</div>
 </section>

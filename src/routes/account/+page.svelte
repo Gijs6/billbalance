@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
+	import Button from '$lib/components/Button.svelte';
 	import DangerZone from '$lib/components/DangerZone.svelte';
+	import FieldLabel from '$lib/components/FieldLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { ActionData, PageData } from './$types';
 
@@ -21,7 +23,7 @@
 			<p class="form__error" role="alert">{form.nameMessage}</p>
 		{/if}
 		<div class="form__field">
-			<label class="form__label" for="name">Name</label>
+			<FieldLabel for="name">Name</FieldLabel>
 			<input
 				class="form__input"
 				id="name"
@@ -34,7 +36,7 @@
 			/>
 		</div>
 		<div class="form__actions">
-			<button type="submit" class="button">Save name</button>
+			<Button type="submit">Save name</Button>
 		</div>
 	</form>
 </section>
@@ -46,7 +48,7 @@
 			<p class="form__error" role="alert">{form.passwordMessage}</p>
 		{/if}
 		<div class="form__field">
-			<label class="form__label" for="currentPassword">Current password</label>
+			<FieldLabel for="currentPassword">Current password</FieldLabel>
 			<input
 				class="form__input"
 				id="currentPassword"
@@ -57,7 +59,7 @@
 			/>
 		</div>
 		<div class="form__field">
-			<label class="form__label" for="newPassword">New password</label>
+			<FieldLabel for="newPassword">New password</FieldLabel>
 			<input
 				class="form__input"
 				id="newPassword"
@@ -70,7 +72,7 @@
 			/>
 		</div>
 		<div class="form__field">
-			<label class="form__label" for="confirmPassword">Confirm new password</label>
+			<FieldLabel for="confirmPassword">Confirm new password</FieldLabel>
 			<input
 				class="form__input"
 				id="confirmPassword"
@@ -84,7 +86,7 @@
 		</div>
 		<p class="form__hint">Changing your password signs you out on your other devices.</p>
 		<div class="form__actions">
-			<button type="submit" class="button">Change password</button>
+			<Button type="submit">Change password</Button>
 		</div>
 	</form>
 </section>

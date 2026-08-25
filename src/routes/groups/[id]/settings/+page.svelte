@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
+	import Button from '$lib/components/Button.svelte';
 	import DangerZone from '$lib/components/DangerZone.svelte';
+	import FieldLabel from '$lib/components/FieldLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { ActionData, PageData } from './$types';
 
@@ -13,9 +15,9 @@
 <div class="page-header">
 	<h1>Group settings</h1>
 	<div class="page-header__actions">
-		<a class="button button--secondary" href={resolve('/groups/[id]', { id: data.group.id })}
-			>Back to group</a
-		>
+		<Button variant="secondary" href={resolve('/groups/[id]', { id: data.group.id })}>
+			Back to group
+		</Button>
 	</div>
 </div>
 
@@ -26,7 +28,7 @@
 			<p class="form__error" role="alert">{form.renameMessage}</p>
 		{/if}
 		<div class="form__field">
-			<label class="form__label" for="name">Name</label>
+			<FieldLabel for="name">Name</FieldLabel>
 			<input
 				class="form__input"
 				id="name"
@@ -38,7 +40,7 @@
 			/>
 		</div>
 		<div class="form__actions">
-			<button type="submit" class="button">Save name</button>
+			<Button type="submit">Save name</Button>
 		</div>
 	</form>
 </section>

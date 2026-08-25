@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { formatCents } from '$lib/money';
+	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import SettlementEdgeStatus from '$lib/components/SettlementEdgeStatus.svelte';
 	import SettlementGroup from '$lib/components/SettlementGroup.svelte';
@@ -18,9 +19,7 @@
 	<div class="page-header">
 		<h1>Settlement preview</h1>
 		<div class="page-header__actions">
-			<button type="button" class="button" onclick={() => confirmDialog?.showModal()}>
-				Settle group balance
-			</button>
+			<Button type="button" onclick={() => confirmDialog?.showModal()}>Settle group balance</Button>
 		</div>
 	</div>
 
@@ -31,10 +30,10 @@
 			edited or deleted, ever again. This cannot be undone.
 		</p>
 		<form method="POST" action="?/confirm" class="form__actions" use:enhance>
-			<button type="submit" class="button">Confirm and settle group</button>
-			<button type="button" class="button button--secondary" onclick={() => confirmDialog?.close()}>
+			<Button type="submit">Confirm and settle group</Button>
+			<Button type="button" variant="secondary" onclick={() => confirmDialog?.close()}>
 				Cancel
-			</button>
+			</Button>
 		</form>
 	</dialog>
 

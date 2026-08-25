@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
+	import Button from '$lib/components/Button.svelte';
+	import FieldLabel from '$lib/components/FieldLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { ActionData } from './$types';
 
@@ -16,7 +18,7 @@
 {:else}
 	<form method="POST" class="form" use:enhance>
 		<div class="form__field">
-			<label class="form__label" for="email">Email</label>
+			<FieldLabel for="email">Email</FieldLabel>
 			<input
 				class="form__input"
 				id="email"
@@ -28,7 +30,7 @@
 		</div>
 
 		<div class="form__actions">
-			<button type="submit" class="button">Send reset link</button>
+			<Button type="submit">Send reset link</Button>
 		</div>
 	</form>
 {/if}

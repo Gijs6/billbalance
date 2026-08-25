@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
+	import Button from '$lib/components/Button.svelte';
+	import FieldLabel from '$lib/components/FieldLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { ActionData } from './$types';
 
@@ -17,7 +19,7 @@
 	{/if}
 
 	<div class="form__field">
-		<label class="form__label" for="name">Group name</label>
+		<FieldLabel for="name">Group name</FieldLabel>
 		<input
 			class="form__input"
 			id="name"
@@ -30,7 +32,7 @@
 	</div>
 
 	<div class="form__actions">
-		<button type="submit" class="button">Create group</button>
-		<a class="button button--secondary" href={resolve('/')}>Cancel</a>
+		<Button type="submit">Create group</Button>
+		<Button variant="secondary" href={resolve('/')}>Cancel</Button>
 	</div>
 </form>

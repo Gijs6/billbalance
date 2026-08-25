@@ -11,6 +11,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { formatCents } from '$lib/money';
+	import Button from './Button.svelte';
+	import StatusLabel from './StatusLabel.svelte';
 
 	let {
 		edge,
@@ -33,18 +35,18 @@
 	<span class="balance">{formatCents(edge.amountCents)}</span>
 	{#if showStatus}
 		{#if edge.status === 'paid'}
-			<span class="tag tag--paid">Paid</span>
+			<StatusLabel variant="paid">Paid</StatusLabel>
 		{:else if isParticipant && allowMarkPaid}
 			<form method="POST" action="?/markPaid" use:enhance>
 				<input type="hidden" name="settlementId" value={edge.id} />
-				<button type="submit" class="button button--secondary button--small">Mark as paid</button>
+				<Button type="submit" variant="secondary" small>Mark as paid</Button>
 			</form>
 		{:else if isPayer}
-			<span class="tag tag--negative">Waiting for you</span>
+			<StatusLabel variant="negative">Waiting for you</StatusLabel>
 		{:else if isReceiver}
-			<span class="tag tag--pending">Waiting on them</span>
+			<StatusLabel variant="pending">Waiting on them</StatusLabel>
 		{:else}
-			<span class="tag">Waiting</span>
+			<StatusLabel>Waiting</StatusLabel>
 		{/if}
 	{/if}
 </span>

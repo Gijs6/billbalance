@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { formatHumanCodeInput } from '$lib/human-code';
+	import Button from '$lib/components/Button.svelte';
+	import FieldLabel from '$lib/components/FieldLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { ActionData } from './$types';
 
@@ -21,7 +23,7 @@
 	{/if}
 
 	<div class="form__field">
-		<label class="form__label" for="code">Join code</label>
+		<FieldLabel for="code">Join code</FieldLabel>
 		<input
 			class="form__input"
 			id="code"
@@ -39,6 +41,6 @@
 	</div>
 
 	<div class="form__actions">
-		<button type="submit" class="button">Join group</button>
+		<Button type="submit">Join group</Button>
 	</div>
 </form>
