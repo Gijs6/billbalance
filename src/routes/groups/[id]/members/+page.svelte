@@ -50,7 +50,7 @@
 	<ul class="list">
 		{#each data.members as member (member.id)}
 			<li class="list-item">
-				<span class="list-item__title">{member.name}</span>
+				<span class="list-item__title">{member.id === data.user?.id ? 'You' : member.name}</span>
 				<span class="list-item__meta">Member since {dateFormatter.format(member.joinedAt)}</span>
 			</li>
 		{/each}

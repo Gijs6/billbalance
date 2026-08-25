@@ -14,6 +14,7 @@
 
 	let {
 		members,
+		currentUserId = undefined,
 		initialCreatedAt = undefined,
 		action = undefined,
 		submitLabel,
@@ -24,6 +25,7 @@
 		initialConsumption = {}
 	}: {
 		members: MemberInfo[];
+		currentUserId?: string;
 		initialCreatedAt?: number;
 		action?: string;
 		submitLabel: string;
@@ -33,6 +35,10 @@
 		initialPaidByUser?: string;
 		initialConsumption?: Record<string, MemberConsumption>;
 	} = $props();
+
+	function memberLabel(member: MemberInfo): string {
+		return member.id === currentUserId ? 'You' : member.name;
+	}
 
 	// svelte-ignore state_referenced_locally
 	const createdAt = initialCreatedAt ?? Date.now();
@@ -56,6 +62,14 @@
 			])
 		)
 	);
+
+	$effect(() => {
+		for (const m of members) {
+			if (!consumption[m.id].checked && consumption[m.id].consumed !== '') {
+				consumption[m.id].consumed = '';
+			}
+		}
+	});
 
 	function equalize() {
 		const totalCents = parseEuros(amount) ?? 0;
@@ -111,7 +125,7 @@
 		<label class="form__label" for="paidByUser">Paid by</label>
 		<select class="form__select" id="paidByUser" name="paidByUser" bind:value={paidByUser} required>
 			{#each members as member (member.id)}
-				<option value={member.id}>{member.name}</option>
+				<option value={member.id}>{memberLabel(member)}</option>
 			{/each}
 		</select>
 	</div>
@@ -134,14 +148,16 @@
 						name="member_{member.id}"
 						bind:checked={consumption[member.id].checked}
 					/>
-					<label for="member_{member.id}">{member.name}</label>
+					<label for="member_{member.id}">{memberLabel(member)}</label>
 					<input
 						class="form__input"
 						type="text"
 						inputmode="decimal"
 						placeholder="0.00"
 						name="consumed_{member.id}"
-						aria-label="{member.name}'s consumed amount in euros"
+						aria-label="{member.id === currentUserId
+							? 'Your'
+							: `${member.name}'s`} consumed amount in euros"
 						disabled={!consumption[member.id].checked}
 						bind:value={consumption[member.id].consumed}
 						oninput={() => onConsumedInput(member.id)}
