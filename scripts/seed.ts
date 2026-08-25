@@ -149,6 +149,11 @@ function splitRandom(totalCents: number, ids: string[]): Record<string, number> 
 	return result;
 }
 
+function printProgress(label: string, current: number, total: number) {
+	process.stdout.write(`\r${label}: ${current}/${total}`);
+	if (current === total) process.stdout.write('\n');
+}
+
 function parseSize(): number {
 	const arg = process.argv[2];
 	if (arg === undefined) return DEFAULT_SIZE;
@@ -183,6 +188,7 @@ async function seed() {
 		const [existing] = await db.select().from(user).where(eq(user.email, email));
 		if (existing) {
 			userIds.push(existing.id);
+			printProgress('Users', i, userCount);
 			continue;
 		}
 
@@ -190,6 +196,7 @@ async function seed() {
 			body: { name: `${names[i - 1]} (${emailPrefix}_${suffix})`, email, password: 'testtest' }
 		});
 		userIds.push(created.id);
+		printProgress('Users', i, userCount);
 	}
 
 	const [newGroup] = await db
@@ -227,6 +234,7 @@ async function seed() {
 				amountCents: shareCents
 			}))
 		);
+		printProgress('Expenses', i + 1, expenseCount);
 	}
 
 	console.log(
