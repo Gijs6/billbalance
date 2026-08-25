@@ -5,13 +5,15 @@
 	import BalanceLabel, { balanceLabelClass } from '$lib/components/BalanceLabel.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 	const groupId = $derived(page.params.id!);
+	const locale = getLocale();
 
 	function formatSignedCents(cents: number): string {
-		return cents > 0 ? `+${formatCents(cents)}` : formatCents(cents);
+		return cents > 0 ? `+${formatCents(cents, locale)}` : formatCents(cents, locale);
 	}
 </script>
 
@@ -43,14 +45,14 @@
 						<span class="balance-equation__label balance-equation__label--balance">Balance</span>
 
 						<span class="balance balance-equation__value--paid"
-							>{formatCents(member.paidCents)}</span
+							>{formatCents(member.paidCents, locale)}</span
 						>
 						<span
 							class="balance-equation__operator balance-equation__operator--minus"
 							aria-hidden="true">-</span
 						>
 						<span class="balance balance-equation__value--consumed"
-							>{formatCents(member.consumedCents)}</span
+							>{formatCents(member.consumedCents, locale)}</span
 						>
 						<span
 							class="balance-equation__operator balance-equation__operator--equals"

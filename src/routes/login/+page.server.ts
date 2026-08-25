@@ -7,6 +7,7 @@ import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
 import { auth } from '$lib/server/auth';
 import { safeRedirectTarget } from '$lib/server/safe-redirect';
+import * as m from '$lib/paraglide/messages';
 
 const DUMMY_EMAIL_PATTERNS = ['seed%@test.com'];
 
@@ -35,7 +36,7 @@ export const actions: Actions = {
 		const password = form.get('password');
 
 		if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
-			return fail(400, { message: 'Please enter your email and password.', email });
+			return fail(400, { message: m.auth_errorEnterEmailPassword(), email });
 		}
 
 		try {
@@ -45,7 +46,7 @@ export const actions: Actions = {
 			});
 		} catch (error) {
 			if (error instanceof APIError) {
-				return fail(400, { message: 'Incorrect email or password.', email });
+				return fail(400, { message: m.auth_errorIncorrectCredentials(), email });
 			}
 			throw error;
 		}

@@ -15,6 +15,9 @@ export const user = sqliteTable('user', {
 	email: text('email').notNull().unique(),
 	emailVerified: integer('email_verified', { mode: 'boolean' }).notNull().default(false),
 	image: text('image'),
+	locale: text('locale', { enum: ['en-US', 'en-GB', 'nl'] })
+		.notNull()
+		.default('en-US'),
 	createdAt: integer('created_at', { mode: 'timestamp_ms' })
 		.notNull()
 		.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`),

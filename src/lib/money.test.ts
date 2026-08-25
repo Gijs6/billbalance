@@ -86,35 +86,39 @@ describe('splitEqual', () => {
 
 describe('formatCents', () => {
 	it('formats whole euros', () => {
-		expect(formatCents(1200)).toBe('€12.00');
+		expect(formatCents(1200, 'en-US')).toBe('€12.00');
 	});
 
 	it('formats cents with padding', () => {
-		expect(formatCents(105)).toBe('€1.05');
+		expect(formatCents(105, 'en-US')).toBe('€1.05');
 	});
 
 	it('formats negative amounts', () => {
-		expect(formatCents(-500)).toBe('-€5.00');
+		expect(formatCents(-500, 'en-US')).toBe('-€5.00');
 	});
 
 	it('formats zero', () => {
-		expect(formatCents(0)).toBe('€0.00');
+		expect(formatCents(0, 'en-US')).toBe('€0.00');
 	});
 
 	it('formats amounts under one euro', () => {
-		expect(formatCents(5)).toBe('€0.05');
+		expect(formatCents(5, 'en-US')).toBe('€0.05');
 	});
 
 	it('formats negative amounts under one euro', () => {
-		expect(formatCents(-5)).toBe('-€0.05');
+		expect(formatCents(-5, 'en-US')).toBe('-€0.05');
 	});
 
 	it('formats large amounts with thousands separators', () => {
-		expect(formatCents(123456789)).toBe('€1,234,567.89');
+		expect(formatCents(123456789, 'en-US')).toBe('€1,234,567.89');
 	});
 
 	it('formats negative zero as zero without a sign', () => {
-		expect(formatCents(-0)).toBe('€0.00');
+		expect(formatCents(-0, 'en-US')).toBe('€0.00');
+	});
+
+	it('formats using Dutch conventions', () => {
+		expect(formatCents(123456789, 'nl')).toBe('€ 1.234.567,89');
 	});
 });
 

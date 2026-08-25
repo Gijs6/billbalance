@@ -1,5 +1,6 @@
 import adapter from '@sveltejs/adapter-node';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import browserslist from 'browserslist';
 import { browserslistToTargets } from 'lightningcss';
 import { defineConfig } from 'vite';
@@ -20,6 +21,12 @@ export default defineConfig({
 		cssMinify: 'lightningcss'
 	},
 	plugins: [
+		paraglideVitePlugin({
+			project: './project.inlang',
+			outdir: './src/lib/paraglide',
+			cookieName: 'locale',
+			strategy: ['cookie', 'preferredLanguage', 'baseLocale']
+		}),
 		sveltekit({
 			compilerOptions: {
 				runes: ({ filename }) =>

@@ -31,7 +31,15 @@ function createAuth() {
 			}
 		},
 		user: {
-			deleteUser: { enabled: true }
+			deleteUser: { enabled: true },
+			additionalFields: {
+				locale: {
+					type: 'string',
+					required: true,
+					defaultValue: 'en-US',
+					input: true
+				}
+			}
 		},
 		plugins: [sveltekitCookies(getRequestEvent)]
 	});

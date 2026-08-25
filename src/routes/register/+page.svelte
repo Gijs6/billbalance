@@ -4,6 +4,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import FieldLabel from '$lib/components/FieldLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
+	import * as m from '$lib/paraglide/messages';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -15,9 +16,9 @@
 	);
 </script>
 
-<PageTitle title="Sign up" />
+<PageTitle title={m.common_signUp()} />
 
-<h1>Create an account</h1>
+<h1>{m.auth_registerHeading()}</h1>
 
 <form method="POST" class="form" use:enhance>
 	{#if form?.message}
@@ -25,7 +26,7 @@
 	{/if}
 
 	<div class="form__field">
-		<FieldLabel for="name">Name</FieldLabel>
+		<FieldLabel for="name">{m.common_name()}</FieldLabel>
 		<input
 			class="form__input"
 			id="name"
@@ -38,7 +39,7 @@
 	</div>
 
 	<div class="form__field">
-		<FieldLabel for="email">Email</FieldLabel>
+		<FieldLabel for="email">{m.common_email()}</FieldLabel>
 		<input
 			class="form__input"
 			id="email"
@@ -51,7 +52,7 @@
 	</div>
 
 	<div class="form__field">
-		<FieldLabel for="password">Password</FieldLabel>
+		<FieldLabel for="password">{m.common_password()}</FieldLabel>
 		<input
 			class="form__input"
 			id="password"
@@ -64,8 +65,8 @@
 	</div>
 
 	<div class="form__actions">
-		<Button type="submit">Sign up</Button>
+		<Button type="submit">{m.common_signUp()}</Button>
 	</div>
 </form>
 
-<p><a href={loginHref}>Already have an account? Log in</a></p>
+<p>{m.auth_alreadyHaveAccountPrefix()} <a href={loginHref}>{m.common_logIn()}</a></p>

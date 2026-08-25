@@ -4,9 +4,11 @@
 	import ExpenseForm from '$lib/components/ExpenseForm.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import { centsToInputValue, formatCents } from '$lib/money';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
+	const locale = getLocale();
 
 	// svelte-ignore state_referenced_locally
 	const consumptionByUserId = new Map(data.consumption.map((c) => [c.userId, c]));
@@ -30,7 +32,7 @@
 	<p class="form__hint">This group is closed, so this expense is read-only.</p>
 	<dl class="card">
 		<dt class="form__label">Total</dt>
-		<dd>{formatCents(data.expense.amountCents)}</dd>
+		<dd>{formatCents(data.expense.amountCents, locale)}</dd>
 		<dt class="form__label">Paid by</dt>
 		<dd>
 			{data.expense.paidByUser === data.user?.id ? 'you' : memberName(data.expense.paidByUser)}
@@ -45,7 +47,7 @@
 								? 'You'
 								: memberName(consumedAmount.userId)}</span
 						>
-						<span class="balance">{formatCents(consumedAmount.amountCents)}</span>
+						<span class="balance">{formatCents(consumedAmount.amountCents, locale)}</span>
 					</li>
 				{/each}
 			</ul>

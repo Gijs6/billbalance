@@ -5,10 +5,12 @@
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import SettlementEdgeStatus from '$lib/components/SettlementEdgeStatus.svelte';
 	import SettlementGroup from '$lib/components/SettlementGroup.svelte';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 	const currentUserId = $derived(data.user?.id);
+	const locale = getLocale();
 
 	let confirmDialog: HTMLDialogElement | undefined = $state();
 </script>
@@ -43,7 +45,10 @@
 			{data.edges.length}
 			{data.edges.length === 1 ? 'payment' : 'payments'} totaling
 			<span class="balance"
-				>{formatCents(data.edges.reduce((sum, edge) => sum + edge.amountCents, 0))}</span
+				>{formatCents(
+					data.edges.reduce((sum, edge) => sum + edge.amountCents, 0),
+					locale
+				)}</span
 			>
 		</p>
 	{:else}

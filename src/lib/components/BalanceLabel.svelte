@@ -8,6 +8,7 @@
 
 <script lang="ts">
 	import { formatCents } from '$lib/money';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import type { Snippet } from 'svelte';
 
 	let {
@@ -23,6 +24,8 @@
 		negative?: Snippet;
 		zero?: Snippet;
 	} = $props();
+
+	const locale = getLocale();
 </script>
 
 <span class={balanceLabelClass(cents)}>
@@ -30,13 +33,14 @@
 		{#if positive}
 			{@render positive()}
 		{:else}
-			{isCurrentUser ? 'are owed' : 'is owed'} <span class="balance">{formatCents(cents)}</span>
+			{isCurrentUser ? 'are owed' : 'is owed'}
+			<span class="balance">{formatCents(cents, locale)}</span>
 		{/if}
 	{:else if cents < 0}
 		{#if negative}
 			{@render negative()}
 		{:else}
-			{isCurrentUser ? 'owe' : 'owes'} <span class="balance">{formatCents(-cents)}</span>
+			{isCurrentUser ? 'owe' : 'owes'} <span class="balance">{formatCents(-cents, locale)}</span>
 		{/if}
 	{:else if zero}
 		{@render zero()}

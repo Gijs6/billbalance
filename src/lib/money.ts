@@ -18,12 +18,11 @@ export function splitEqual(
 	return result;
 }
 
-export function formatCents(cents: number): string {
-	const sign = cents < 0 ? '-' : '';
-	const abs = Math.abs(cents);
-	const euros = Math.floor(abs / 100);
-	const remainder = abs % 100;
-	return `${sign}€${euros.toLocaleString('en-US')}.${remainder.toString().padStart(2, '0')}`;
+export function formatCents(cents: number, locale: string): string {
+	const normalized = cents === 0 ? 0 : cents;
+	return new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(
+		normalized / 100
+	);
 }
 
 export function centsToInputValue(cents: number): string {

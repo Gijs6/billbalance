@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -14,7 +15,7 @@
 		setTimeout(() => (copied = false), 1500);
 	}
 
-	const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+	const dateFormatter = new Intl.DateTimeFormat(getLocale(), {
 		day: 'numeric',
 		month: 'short',
 		year: 'numeric'

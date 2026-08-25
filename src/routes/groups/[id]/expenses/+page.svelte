@@ -5,12 +5,14 @@
 	import BalanceLabel from '$lib/components/BalanceLabel.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 	const groupId = $derived(page.params.id!);
+	const locale = getLocale();
 
-	const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+	const dateFormatter = new Intl.DateTimeFormat(locale, {
 		day: 'numeric',
 		month: 'short',
 		year: 'numeric'
@@ -45,13 +47,13 @@
 						>
 					</span>
 					<span class="list-item__amounts">
-						<span class="balance">{formatCents(expense.amountCents)}</span>
+						<span class="balance">{formatCents(expense.amountCents, locale)}</span>
 						<BalanceLabel cents={expense.myEffectCents}>
 							{#snippet positive()}
-								<span class="balance">+{formatCents(expense.myEffectCents)}</span> for your balance
+								<span class="balance">+{formatCents(expense.myEffectCents, locale)}</span> for your balance
 							{/snippet}
 							{#snippet negative()}
-								<span class="balance">{formatCents(expense.myEffectCents)}</span> for your balance
+								<span class="balance">{formatCents(expense.myEffectCents, locale)}</span> for your balance
 							{/snippet}
 							{#snippet zero()}no effect on your balance{/snippet}
 						</BalanceLabel>

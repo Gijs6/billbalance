@@ -11,6 +11,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { formatCents } from '$lib/money';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import Button from './Button.svelte';
 	import StatusLabel from './StatusLabel.svelte';
 
@@ -26,13 +27,15 @@
 		allowMarkPaid?: boolean;
 	} = $props();
 
+	const locale = getLocale();
+
 	const isParticipant = $derived(currentUserId === edge.fromUser || currentUserId === edge.toUser);
 	const isPayer = $derived(currentUserId === edge.fromUser);
 	const isReceiver = $derived(currentUserId === edge.toUser);
 </script>
 
 <span class="list-item__end">
-	<span class="balance">{formatCents(edge.amountCents)}</span>
+	<span class="balance">{formatCents(edge.amountCents, locale)}</span>
 	{#if showStatus}
 		{#if edge.status === 'paid'}
 			<StatusLabel variant="paid">Paid</StatusLabel>
