@@ -2,17 +2,12 @@
 	import { formatCents } from '$lib/money';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import BalanceLabel from '$lib/components/BalanceLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 	const groupId = $derived(page.params.id!);
-
-	function effectLabelClass(cents: number): string {
-		if (cents > 0) return 'balance-label balance-label--positive';
-		if (cents < 0) return 'balance-label balance-label--negative';
-		return 'balance-label balance-label--zero';
-	}
 
 	const dateFormatter = new Intl.DateTimeFormat('en-GB', {
 		day: 'numeric',
@@ -27,6 +22,8 @@
 	<p class="form__actions">
 		<a class="button" href={resolve('/groups/[id]/expenses/new', { id: groupId })}>Add expense</a>
 	</p>
+{:else}
+	<p class="form__hint">This group is closed. No new expenses can be added.</p>
 {/if}
 
 {#if data.expenses.length > 0}
@@ -48,15 +45,15 @@
 					</span>
 					<span class="list-item__amounts">
 						<span class="balance">{formatCents(expense.amountCents)}</span>
-						<span class={effectLabelClass(expense.myEffectCents)}>
-							{#if expense.myEffectCents === 0}
-								no effect on your balance
-							{:else}
-								<span class="balance"
-									>{expense.myEffectCents > 0 ? '+' : ''}{formatCents(expense.myEffectCents)}</span
-								> for your balance
-							{/if}
-						</span>
+						<BalanceLabel cents={expense.myEffectCents}>
+							{#snippet positive()}
+								<span class="balance">+{formatCents(expense.myEffectCents)}</span> for your balance
+							{/snippet}
+							{#snippet negative()}
+								<span class="balance">{formatCents(expense.myEffectCents)}</span> for your balance
+							{/snippet}
+							{#snippet zero()}no effect on your balance{/snippet}
+						</BalanceLabel>
 					</span>
 				</a>
 			</li>

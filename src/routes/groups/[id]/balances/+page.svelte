@@ -2,17 +2,12 @@
 	import { formatCents } from '$lib/money';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import BalanceLabel, { balanceLabelClass } from '$lib/components/BalanceLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 	const groupId = $derived(page.params.id!);
-
-	function balanceLabelClass(cents: number): string {
-		if (cents > 0) return 'balance-label balance-label--positive';
-		if (cents < 0) return 'balance-label balance-label--negative';
-		return 'balance-label balance-label--zero';
-	}
 
 	function formatSignedCents(cents: number): string {
 		return cents > 0 ? `+${formatCents(cents)}` : formatCents(cents);
@@ -39,16 +34,16 @@
 		<li>
 			<details class="balance-card">
 				<summary class="list-item">
-					<span class="list-item__title">{member.name}</span>
-					<span class={balanceLabelClass(member.balanceCents)}>
-						{#if member.balanceCents > 0}
+					<span class="list-item__title">{member.id === data.user?.id ? 'You' : member.name}</span>
+					<BalanceLabel cents={member.balanceCents}>
+						{#snippet positive()}
 							is owed <span class="balance">{formatCents(member.balanceCents)}</span>
-						{:else if member.balanceCents < 0}
+						{/snippet}
+						{#snippet negative()}
 							owes <span class="balance">{formatCents(-member.balanceCents)}</span>
-						{:else}
-							settled up
-						{/if}
-					</span>
+						{/snippet}
+						{#snippet zero()}settled up{/snippet}
+					</BalanceLabel>
 				</summary>
 				<div class="balance-equation">
 					<div class="balance-equation__grid">
