@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
+	import DangerZone from '$lib/components/DangerZone.svelte';
 	import ExpenseForm from '$lib/components/ExpenseForm.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import { centsToInputValue, formatCents } from '$lib/money';
@@ -9,11 +9,16 @@
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	// svelte-ignore state_referenced_locally
+	const consumptionByUserId = new Map(data.consumption.map((c) => [c.userId, c]));
+	// svelte-ignore state_referenced_locally
 	const initialConsumption = Object.fromEntries(
-		data.consumption.map((c) => [
-			c.userId,
-			{ checked: true, consumed: centsToInputValue(c.amountCents) }
-		])
+		data.members.map((m) => {
+			const c = consumptionByUserId.get(m.id);
+			return [
+				m.id,
+				{ checked: c !== undefined, consumed: c ? centsToInputValue(c.amountCents) : '' }
+			];
+		})
 	);
 	const memberName = (id: string) => data.members.find((m) => m.id === id)?.name ?? 'Unknown';
 </script>
@@ -35,7 +40,11 @@
 			<ul class="list">
 				{#each data.consumption as consumedAmount (consumedAmount.userId)}
 					<li class="list-item">
-						<span class="list-item__title">{memberName(consumedAmount.userId)}</span>
+						<span class="list-item__title"
+							>{consumedAmount.userId === data.user?.id
+								? 'You'
+								: memberName(consumedAmount.userId)}</span
+						>
 						<span class="balance">{formatCents(consumedAmount.amountCents)}</span>
 					</li>
 				{/each}
@@ -47,6 +56,7 @@
 
 	<ExpenseForm
 		members={data.members}
+		currentUserId={data.user?.id}
 		initialCreatedAt={data.expense.createdAt.getTime()}
 		action="?/update"
 		submitLabel="Save changes"
@@ -57,27 +67,18 @@
 		{initialConsumption}
 	/>
 
-	<div class="danger-zone">
-		{#if form && 'needsDeleteConfirm' in form && form.needsDeleteConfirm}
-			<p class="form__error" role="alert">
-				Are you sure you want to delete <strong>{data.expense.description}</strong>? This cannot be
-				undone.
-			</p>
-			<form method="POST" action="?/delete" class="form__actions" use:enhance>
-				<input type="hidden" name="confirm" value="true" />
-				<button type="submit" class="button button--danger">Yes, delete permanently</button>
-				<a
-					class="button button--secondary"
-					href={resolve('/groups/[id]/expenses/[expenseId]', {
-						id: data.expense.groupId,
-						expenseId: data.expense.id
-					})}>Cancel</a
-				>
-			</form>
-		{:else}
-			<form method="POST" action="?/delete" use:enhance>
-				<button type="submit" class="button button--danger">Delete expense</button>
-			</form>
-		{/if}
-	</div>
+	<DangerZone
+		needsConfirm={Boolean(form && 'needsDeleteConfirm' in form && form.needsDeleteConfirm)}
+		confirmLabel="Yes, delete permanently"
+		cancelHref={resolve('/groups/[id]/expenses/[expenseId]', {
+			id: data.expense.groupId,
+			expenseId: data.expense.id
+		})}
+		deleteLabel="Delete expense"
+	>
+		{#snippet confirmMessage()}
+			Are you sure you want to delete <strong>{data.expense.description}</strong>? This cannot be
+			undone.
+		{/snippet}
+	</DangerZone>
 {/if}

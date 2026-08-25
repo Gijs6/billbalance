@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
+	import DangerZone from '$lib/components/DangerZone.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import type { ActionData, PageData } from './$types';
 
@@ -44,25 +45,18 @@
 
 <section class="section" aria-labelledby="danger-heading">
 	<h2 id="danger-heading" class="section__title">Delete group</h2>
-	<div class="danger-zone">
-		{#if form?.needsDeleteConfirm}
-			<p class="form__error" role="alert">
-				Are you sure you want to delete <strong>{data.group.name}</strong>? This permanently deletes
-				all its expenses and settlement history and cannot be undone.
-			</p>
-			<form method="POST" action="?/delete" class="form__actions" use:enhance>
-				<input type="hidden" name="confirm" value="true" />
-				<button type="submit" class="button button--danger">Yes, delete permanently</button>
-				<a
-					class="button button--secondary"
-					href={resolve('/groups/[id]/settings', { id: data.group.id })}>Cancel</a
-				>
-			</form>
-		{:else}
-			<p class="form__hint">Deleting a group removes it and all its expenses for everyone.</p>
-			<form method="POST" action="?/delete" use:enhance>
-				<button type="submit" class="button button--danger">Delete group</button>
-			</form>
-		{/if}
-	</div>
+	<DangerZone
+		needsConfirm={Boolean(form?.needsDeleteConfirm)}
+		confirmLabel="Yes, delete permanently"
+		cancelHref={resolve('/groups/[id]/settings', { id: data.group.id })}
+		deleteLabel="Delete group"
+	>
+		{#snippet hint()}
+			Deleting a group removes it and all its expenses for everyone.
+		{/snippet}
+		{#snippet confirmMessage()}
+			Are you sure you want to delete <strong>{data.group.name}</strong>? This permanently deletes
+			all its expenses and settlement history and cannot be undone.
+		{/snippet}
+	</DangerZone>
 </section>
