@@ -7,27 +7,40 @@
 </script>
 
 <script lang="ts">
+	import { formatCents } from '$lib/money';
 	import type { Snippet } from 'svelte';
 
 	let {
 		cents,
+		isCurrentUser = false,
 		positive,
 		negative,
 		zero
 	}: {
 		cents: number;
-		positive: Snippet;
-		negative: Snippet;
-		zero: Snippet;
+		isCurrentUser?: boolean;
+		positive?: Snippet;
+		negative?: Snippet;
+		zero?: Snippet;
 	} = $props();
 </script>
 
 <span class={balanceLabelClass(cents)}>
 	{#if cents > 0}
-		{@render positive()}
+		{#if positive}
+			{@render positive()}
+		{:else}
+			{isCurrentUser ? 'are owed' : 'is owed'} <span class="balance">{formatCents(cents)}</span>
+		{/if}
 	{:else if cents < 0}
-		{@render negative()}
-	{:else}
+		{#if negative}
+			{@render negative()}
+		{:else}
+			{isCurrentUser ? 'owe' : 'owes'} <span class="balance">{formatCents(-cents)}</span>
+		{/if}
+	{:else if zero}
 		{@render zero()}
+	{:else}
+		settled up
 	{/if}
 </span>

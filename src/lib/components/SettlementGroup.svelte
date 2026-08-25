@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatCents } from '$lib/money';
+	import BalanceLabel from './BalanceLabel.svelte';
 	import SettlementEdgeStatus, { type SettlementEdge } from './SettlementEdgeStatus.svelte';
 
 	interface SettlementEdgeWithNames extends SettlementEdge {
@@ -25,18 +25,10 @@
 <li class="settlement-list__group">
 	<p class="settlement-list__person">
 		<span class="list-item__title">{isCurrentUser ? 'You' : person.name}</span>
-		<span
-			class="balance-label {direction === 'creditor'
-				? 'balance-label--positive'
-				: 'balance-label--negative'}"
-		>
-			{#if direction === 'creditor'}
-				{isCurrentUser ? 'are owed' : 'is owed'}
-			{:else}
-				{isCurrentUser ? 'owe' : 'owes'}
-			{/if}
-			<span class="balance">{formatCents(person.totalCents)}</span>
-		</span>
+		<BalanceLabel
+			cents={direction === 'creditor' ? person.totalCents : -person.totalCents}
+			{isCurrentUser}
+		/>
 	</p>
 	<ul class="list">
 		{#each person.edges as edge (edge.id)}

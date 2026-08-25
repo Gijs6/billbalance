@@ -17,14 +17,14 @@
 	--color-positive: #1f8a4c;
 	--color-negative: #c23b30;
 
-	--color-tag-paid: #1f8a4c;
-	--color-tag-paid-bg: #e3f3e8;
-	--color-tag-pending: #a5720a;
-	--color-tag-pending-bg: #f7efdc;
-	--color-tag-neutral: #55555a;
-	--color-tag-neutral-bg: #eeeef0;
-	--color-tag-negative: #c23b30;
-	--color-tag-negative-bg: #f9e5e3;
+	--color-label-paid: #1f8a4c;
+	--color-label-paid-bg: #e3f3e8;
+	--color-label-pending: #a5720a;
+	--color-label-pending-bg: #f7efdc;
+	--color-label-neutral: #55555a;
+	--color-label-neutral-bg: #eeeef0;
+	--color-label-negative: #c23b30;
+	--color-label-negative-bg: #f9e5e3;
 
 	--color-danger: #c23b30;
 	--color-danger-strong: #96271e;
@@ -106,6 +106,13 @@ a {
 button {
 	font-family: inherit;
 	font-size: inherit;
+	line-height: inherit;
+	appearance: none;
+}
+
+button::-moz-focus-inner {
+	border: 0;
+	padding: 0;
 }
 
 input[type='checkbox'] {
@@ -518,32 +525,32 @@ details.balance-card summary.list-item {
 	gap: var(--space-1);
 }
 
-.tag {
+.label {
 	display: inline-block;
 	padding: var(--space-1) var(--space-2);
-	border: 1px solid var(--color-tag-neutral);
-	background: var(--color-tag-neutral-bg);
-	color: var(--color-tag-neutral);
+	border: 1px solid var(--color-label-neutral);
+	background: var(--color-label-neutral-bg);
+	color: var(--color-label-neutral);
 	font-size: var(--font-size-sm);
 	font-weight: 600;
 }
 
-.tag--paid {
-	border-color: var(--color-tag-paid);
-	background: var(--color-tag-paid-bg);
-	color: var(--color-tag-paid);
+.label--paid {
+	border-color: var(--color-label-paid);
+	background: var(--color-label-paid-bg);
+	color: var(--color-label-paid);
 }
 
-.tag--pending {
-	border-color: var(--color-tag-pending);
-	background: var(--color-tag-pending-bg);
-	color: var(--color-tag-pending);
+.label--pending {
+	border-color: var(--color-label-pending);
+	background: var(--color-label-pending-bg);
+	color: var(--color-label-pending);
 }
 
-.tag--negative {
-	border-color: var(--color-tag-negative);
-	background: var(--color-tag-negative-bg);
-	color: var(--color-tag-negative);
+.label--negative {
+	border-color: var(--color-label-negative);
+	background: var(--color-label-negative-bg);
+	color: var(--color-label-negative);
 }
 
 .card {
