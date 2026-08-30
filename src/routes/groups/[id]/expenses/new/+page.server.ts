@@ -5,6 +5,7 @@ import { expense, expenseConsumption } from '$lib/server/db/schema';
 import { getGroupMembers, requireGroupMembership, requireOpenGroup } from '$lib/server/groups';
 import { parseExpenseForm } from '$lib/server/expense-validation';
 import { setFlash } from '$lib/server/flash';
+import * as m from '$lib/paraglide/messages';
 
 export const load: PageServerLoad = async ({ params, locals, url }) => {
 	if (!locals.user) redirect(302, `/login?redirectTo=${encodeURIComponent(url.pathname)}`);
@@ -52,7 +53,7 @@ export const actions: Actions = {
 			}))
 		);
 
-		setFlash(cookies, 'Expense added.');
+		setFlash(cookies, m.expense_flashAdded());
 		redirect(303, `/groups/${params.id}`);
 	}
 };

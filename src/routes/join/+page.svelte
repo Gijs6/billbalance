@@ -4,6 +4,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import FieldLabel from '$lib/components/FieldLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
+	import * as m from '$lib/paraglide/messages';
 	import type { ActionData } from './$types';
 
 	let { form }: { form: ActionData } = $props();
@@ -13,9 +14,9 @@
 	}
 </script>
 
-<PageTitle title="Join a group" />
+<PageTitle title={m.join_title()} />
 
-<h1>Join a group</h1>
+<h1>{m.join_title()}</h1>
 
 <form method="POST" class="form" use:enhance>
 	{#if form?.message}
@@ -23,7 +24,7 @@
 	{/if}
 
 	<div class="form__field">
-		<FieldLabel for="code">Join code</FieldLabel>
+		<FieldLabel for="code">{m.join_codeLabel()}</FieldLabel>
 		<input
 			class="form__input"
 			id="code"
@@ -41,6 +42,6 @@
 	</div>
 
 	<div class="form__actions">
-		<Button type="submit">Join group</Button>
+		<Button type="submit">{m.join_joinGroupCta()}</Button>
 	</div>
 </form>

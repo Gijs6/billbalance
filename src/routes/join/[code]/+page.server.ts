@@ -5,13 +5,14 @@ import { db } from '$lib/server/db';
 import { group } from '$lib/server/db/schema';
 import { addGroupMember, isGroupMember } from '$lib/server/groups';
 import { normalizeHumanCode } from '$lib/human-code';
+import * as m from '$lib/paraglide/messages';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const [found] = await db
 		.select()
 		.from(group)
 		.where(eq(group.joinCode, normalizeHumanCode(params.code)));
-	if (!found) error(404, 'This join link is invalid.');
+	if (!found) error(404, m.join_invalidLinkError());
 
 	const alreadyMember = locals.user ? await isGroupMember(found.id, locals.user.id) : false;
 
@@ -32,9 +33,9 @@ export const actions: Actions = {
 			.select()
 			.from(group)
 			.where(eq(group.joinCode, normalizeHumanCode(params.code)));
-		if (!found) error(404, 'This join link is invalid.');
+		if (!found) error(404, m.join_invalidLinkError());
 		if (found.status === 'closed') {
-			error(403, 'This group is closed and is no longer accepting new members.');
+			error(403, m.join_closedError());
 		}
 
 		await addGroupMember(found.id, locals.user.id);

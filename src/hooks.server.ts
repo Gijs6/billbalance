@@ -1,4 +1,5 @@
 import type { Handle } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 import { auth } from '$lib/server/auth';
 import { getLocale, cookieName, cookieMaxAge, isLocale } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
@@ -27,7 +28,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 			event.cookies.set(cookieName, dbLocale, {
 				path: '/',
 				maxAge: cookieMaxAge,
-				httpOnly: false
+				httpOnly: false,
+				secure: !dev
 			});
 		}
 		request = withLocaleCookie(event.request, dbLocale);

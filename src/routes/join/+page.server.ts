@@ -1,6 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { normalizeHumanCode } from '$lib/human-code';
+import * as m from '$lib/paraglide/messages';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) redirect(302, '/login?redirectTo=/join');
@@ -16,7 +17,7 @@ export const actions: Actions = {
 
 		if (!code) {
 			return fail(400, {
-				message: 'Please enter a join code.',
+				message: m.join_errorEnterCode(),
 				code: typeof raw === 'string' ? raw : ''
 			});
 		}

@@ -6,6 +6,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import * as m from '$lib/paraglide/messages';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -17,16 +18,17 @@
 	}
 </script>
 
-<PageTitle title="Balances" />
+<PageTitle title={m.group_tabBalances()} />
 
 {#if data.isClosed}
 	<p class="form__hint">
-		This is the final balance from when the group closed. See the Settlement tab for what's still
-		owed.
+		{m.balances_closedHint()}
 	</p>
 {:else}
 	<p class="form__actions">
-		<Button href={resolve('/groups/[id]/settlement', { id: groupId })}>Settle group balance</Button>
+		<Button href={resolve('/groups/[id]/settlement', { id: groupId })}>
+			{m.balances_settleCta()}
+		</Button>
 	</p>
 {/if}
 
@@ -35,14 +37,22 @@
 		<li>
 			<details class="balance-card">
 				<summary class="list-item">
-					<span class="list-item__title">{member.id === data.user?.id ? 'You' : member.name}</span>
+					<span class="list-item__title"
+						>{member.id === data.user?.id ? m.common_you() : member.name}</span
+					>
 					<BalanceLabel cents={member.balanceCents} isCurrentUser={member.id === data.user?.id} />
 				</summary>
 				<div class="balance-equation">
 					<div class="balance-equation__grid">
-						<span class="balance-equation__label balance-equation__label--paid">Paid</span>
-						<span class="balance-equation__label balance-equation__label--consumed">Consumed</span>
-						<span class="balance-equation__label balance-equation__label--balance">Balance</span>
+						<span class="balance-equation__label balance-equation__label--paid"
+							>{m.balances_paidLabel()}</span
+						>
+						<span class="balance-equation__label balance-equation__label--consumed"
+							>{m.expense_consumedLabel()}</span
+						>
+						<span class="balance-equation__label balance-equation__label--balance"
+							>{m.balances_balanceLabel()}</span
+						>
 
 						<span class="balance balance-equation__value--paid"
 							>{formatCents(member.paidCents, locale)}</span

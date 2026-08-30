@@ -3,6 +3,7 @@
 	import { resolve } from '$app/paths';
 	import Button from '$lib/components/Button.svelte';
 	import StatusLabel from '$lib/components/StatusLabel.svelte';
+	import * as m from '$lib/paraglide/messages';
 	import type { LayoutProps } from './$types';
 
 	let { data, children }: LayoutProps = $props();
@@ -11,22 +12,22 @@
 		[
 			{
 				key: 'expenses',
-				label: 'Expenses',
+				label: m.group_tabExpenses(),
 				href: resolve('/groups/[id]/expenses', { id: data.group.id })
 			},
 			{
 				key: 'balances',
-				label: 'Balances',
+				label: m.group_tabBalances(),
 				href: resolve('/groups/[id]/balances', { id: data.group.id })
 			},
 			{
 				key: 'settlement',
-				label: 'Settlement',
+				label: m.group_tabSettlement(),
 				href: resolve('/groups/[id]/settlement', { id: data.group.id })
 			},
 			{
 				key: 'members',
-				label: 'Members',
+				label: m.group_tabMembers(),
 				href: resolve('/groups/[id]/members', { id: data.group.id })
 			}
 		]
@@ -45,24 +46,24 @@
 		<h1>{data.group.name}</h1>
 		{#if data.group.status === 'closed'}
 			{#if data.allSettled}
-				<StatusLabel variant="paid" title="This group is closed and all payments are settled.">
-					Completed
+				<StatusLabel variant="paid" title={m.group_statusCompletedTitle()}>
+					{m.group_statusCompleted()}
 				</StatusLabel>
 			{:else}
-				<StatusLabel variant="pending" title="This group is closed and read-only.">
-					Waiting for payments
+				<StatusLabel variant="pending" title={m.group_statusWaitingTitle()}>
+					{m.group_statusWaiting()}
 				</StatusLabel>
 			{/if}
 		{/if}
 	</div>
 	<div class="page-header__actions">
 		<Button variant="secondary" href={resolve('/groups/[id]/settings', { id: data.group.id })}>
-			Settings
+			{m.nav_settings()}
 		</Button>
 	</div>
 </div>
 
-<nav class="tabs" aria-label="Group sections">
+<nav class="tabs" aria-label={m.group_tabsAriaLabel()}>
 	<ul class="tabs__list">
 		{#each tabs as tab (tab.key)}
 			<li>

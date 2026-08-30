@@ -9,6 +9,7 @@
 <script lang="ts">
 	import { formatCents } from '$lib/money';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import * as m from '$lib/paraglide/messages';
 	import type { Snippet } from 'svelte';
 
 	let {
@@ -33,18 +34,19 @@
 		{#if positive}
 			{@render positive()}
 		{:else}
-			{isCurrentUser ? 'are owed' : 'is owed'}
+			{isCurrentUser ? m.balance_areOwed() : m.balance_isOwed()}
 			<span class="balance">{formatCents(cents, locale)}</span>
 		{/if}
 	{:else if cents < 0}
 		{#if negative}
 			{@render negative()}
 		{:else}
-			{isCurrentUser ? 'owe' : 'owes'} <span class="balance">{formatCents(-cents, locale)}</span>
+			{isCurrentUser ? m.balance_owe() : m.balance_owes()}
+			<span class="balance">{formatCents(-cents, locale)}</span>
 		{/if}
 	{:else if zero}
 		{@render zero()}
 	{:else}
-		settled up
+		{m.balance_settledUp()}
 	{/if}
 </span>

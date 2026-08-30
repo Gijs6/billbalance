@@ -11,6 +11,7 @@ import {
 import type { GroupMemberInfo } from '$lib/server/groups';
 import { simplifyDebts } from '$lib/money';
 import { setFlash } from '$lib/server/flash';
+import * as m from '$lib/paraglide/messages';
 
 interface EdgeLike {
 	id: string;
@@ -31,8 +32,8 @@ async function computePreviewEdges(groupId: string): Promise<EdgeLike[]> {
 		id: `${i}`,
 		fromUser: edge.fromUser,
 		toUser: edge.toUser,
-		fromName: names.get(edge.fromUser) ?? 'Unknown',
-		toName: names.get(edge.toUser) ?? 'Unknown',
+		fromName: names.get(edge.fromUser) ?? m.common_unknown(),
+		toName: names.get(edge.toUser) ?? m.common_unknown(),
 		amountCents: edge.amountCents,
 		status: 'pending' as const
 	}));
@@ -102,11 +103,11 @@ export const actions: Actions = {
 	confirm: async ({ params, locals, cookies }) => {
 		if (!locals.user) redirect(302, '/login');
 		const currentGroup = await requireGroupMembership(params.id, locals.user.id);
-		if (currentGroup.status === 'closed') error(400, 'This group is already closed.');
+		if (currentGroup.status === 'closed') error(400, m.settlement_errorAlreadyClosed());
 
 		await closeGroup(params.id);
 
-		setFlash(cookies, 'Group closed and settled.');
+		setFlash(cookies, m.settlement_flashClosedAndSettled());
 		redirect(303, `/groups/${params.id}/settlement`);
 	},
 
@@ -117,7 +118,7 @@ export const actions: Actions = {
 		const form = await request.formData();
 		const settlementId = form.get('settlementId');
 		if (typeof settlementId !== 'string' || !settlementId) {
-			return fail(400, { message: 'Missing settlement id.' });
+			return fail(400, { message: m.settlement_errorMissingId() });
 		}
 
 		await markSettlementPaid(settlementId, locals.user.id);

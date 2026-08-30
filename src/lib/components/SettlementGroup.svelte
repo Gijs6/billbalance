@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as m from '$lib/paraglide/messages';
 	import BalanceLabel from './BalanceLabel.svelte';
 	import SettlementEdgeStatus, { type SettlementEdge } from './SettlementEdgeStatus.svelte';
 
@@ -24,7 +25,7 @@
 
 <li class="settlement-list__group">
 	<p class="settlement-list__person">
-		<span class="list-item__title">{isCurrentUser ? 'You' : person.name}</span>
+		<span class="list-item__title">{isCurrentUser ? m.common_you() : person.name}</span>
 		<BalanceLabel
 			cents={direction === 'creditor' ? person.totalCents : -person.totalCents}
 			{isCurrentUser}
@@ -35,8 +36,12 @@
 			<li class="list-item">
 				<span class="list-item__title"
 					>{direction === 'creditor'
-						? `by ${edge.fromUser === currentUserId ? 'you' : edge.fromName}`
-						: `to ${edge.toUser === currentUserId ? 'you' : edge.toName}`}</span
+						? m.settlement_paidBy({
+								name: edge.fromUser === currentUserId ? m.common_youLower() : edge.fromName
+							})
+						: m.settlement_paidTo({
+								name: edge.toUser === currentUserId ? m.common_youLower() : edge.toName
+							})}</span
 				>
 				<SettlementEdgeStatus {edge} {currentUserId} {showStatus} allowMarkPaid={false} />
 			</li>

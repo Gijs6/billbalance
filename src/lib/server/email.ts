@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer';
 import { env } from '$env/dynamic/private';
+import { isLocale, type Locale } from '$lib/paraglide/runtime';
+import * as m from '$lib/paraglide/messages';
 
 function getTransport() {
 	if (!env.SMTP_HOST) return null;
@@ -19,8 +21,10 @@ function getTransport() {
 
 const SENDER_NAME = 'billbalance';
 
-export async function sendPasswordResetEmail(email: string, resetUrl: string) {
+export async function sendPasswordResetEmail(email: string, resetUrl: string, userLocale?: string) {
 	const transport = getTransport();
+	const locale = isLocale(userLocale) ? userLocale : undefined;
+	const opts: { locale?: Locale } = locale ? { locale } : {};
 
 	if (!transport) {
 		console.log(`[email] Password reset link for ${email}: ${resetUrl}`);
@@ -32,8 +36,8 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
 	await transport.sendMail({
 		from: senderAddress ? `${SENDER_NAME} <${senderAddress}>` : undefined,
 		to: email,
-		subject: 'Reset your password - billbalance',
-		text: `Hey,\n\nYou can reset your password using the link below:\n${resetUrl}\n\nIf you didn't request this, you can safely ignore this email.\n\nbillbalance`,
-		html: `<p>Hey,</p><p>You can reset your password using the link below:</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>If you didn't request this, you can safely ignore this email.</p><p>billbalance</p>`
+		subject: `${m.email_resetSubject({}, opts)} - ${SENDER_NAME}`,
+		text: `${m.email_resetGreeting({}, opts)}\n\n${m.email_resetIntro({}, opts)}\n${resetUrl}\n\n${m.email_resetIgnore({}, opts)}\n\n${SENDER_NAME}`,
+		html: `<p>${m.email_resetGreeting({}, opts)}</p><p>${m.email_resetIntro({}, opts)}</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>${m.email_resetIgnore({}, opts)}</p><p>${SENDER_NAME}</p>`
 	});
 }

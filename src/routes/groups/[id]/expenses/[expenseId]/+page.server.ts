@@ -6,13 +6,14 @@ import { expense, expenseConsumption } from '$lib/server/db/schema';
 import { getGroupMembers, requireGroupMembership, requireOpenGroup } from '$lib/server/groups';
 import { parseExpenseForm } from '$lib/server/expense-validation';
 import { setFlash } from '$lib/server/flash';
+import * as m from '$lib/paraglide/messages';
 
 async function loadExpense(groupId: string, expenseId: string) {
 	const [row] = await db
 		.select()
 		.from(expense)
 		.where(and(eq(expense.id, expenseId), eq(expense.groupId, groupId)));
-	if (!row) error(404, 'Expense not found');
+	if (!row) error(404, m.expense_notFoundError());
 	return row;
 }
 
@@ -71,7 +72,7 @@ export const actions: Actions = {
 			}))
 		);
 
-		setFlash(cookies, 'Expense updated.');
+		setFlash(cookies, m.expense_flashUpdated());
 		redirect(303, `/groups/${params.id}`);
 	},
 
@@ -90,7 +91,7 @@ export const actions: Actions = {
 
 		await db.delete(expense).where(eq(expense.id, params.expenseId));
 
-		setFlash(cookies, 'Expense deleted.');
+		setFlash(cookies, m.expense_flashDeleted());
 		redirect(303, `/groups/${params.id}`);
 	}
 };

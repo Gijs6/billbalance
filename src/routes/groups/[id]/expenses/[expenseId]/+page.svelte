@@ -5,6 +5,7 @@
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import { centsToInputValue, formatCents } from '$lib/money';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import * as m from '$lib/paraglide/messages';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -22,29 +23,32 @@
 			];
 		})
 	);
-	const memberName = (id: string) => data.members.find((m) => m.id === id)?.name ?? 'Unknown';
+	const memberName = (id: string) =>
+		data.members.find((m) => m.id === id)?.name ?? m.common_unknown();
 </script>
 
-<PageTitle title={data.isClosed ? data.expense.description : 'Edit expense'} />
+<PageTitle title={data.isClosed ? data.expense.description : m.expense_editTitle()} />
 
 {#if data.isClosed}
 	<h1>{data.expense.description}</h1>
-	<p class="form__hint">This group is closed, so this expense is read-only.</p>
+	<p class="form__hint">{m.expense_closedHint()}</p>
 	<dl class="card">
-		<dt class="form__label">Total</dt>
+		<dt class="form__label">{m.expense_totalLabel()}</dt>
 		<dd>{formatCents(data.expense.amountCents, locale)}</dd>
-		<dt class="form__label">Paid by</dt>
+		<dt class="form__label">{m.expense_paidByLabel()}</dt>
 		<dd>
-			{data.expense.paidByUser === data.user?.id ? 'you' : memberName(data.expense.paidByUser)}
+			{data.expense.paidByUser === data.user?.id
+				? m.common_youLower()
+				: memberName(data.expense.paidByUser)}
 		</dd>
-		<dt class="form__label">Consumed</dt>
+		<dt class="form__label">{m.expense_consumedLabel()}</dt>
 		<dd class="card__full">
 			<ul class="list">
 				{#each data.consumption as consumedAmount (consumedAmount.userId)}
 					<li class="list-item">
 						<span class="list-item__title"
 							>{consumedAmount.userId === data.user?.id
-								? 'You'
+								? m.common_you()
 								: memberName(consumedAmount.userId)}</span
 						>
 						<span class="balance">{formatCents(consumedAmount.amountCents, locale)}</span>
@@ -54,14 +58,14 @@
 		</dd>
 	</dl>
 {:else}
-	<h1>Edit expense</h1>
+	<h1>{m.expense_editTitle()}</h1>
 
 	<ExpenseForm
 		members={data.members}
 		currentUserId={data.user?.id}
 		initialCreatedAt={data.expense.createdAt.getTime()}
 		action="?/update"
-		submitLabel="Save changes"
+		submitLabel={m.expense_saveChangesCta()}
 		message={form && 'message' in form ? form.message : undefined}
 		initialDescription={data.expense.description}
 		initialAmount={centsToInputValue(data.expense.amountCents)}
@@ -71,16 +75,16 @@
 
 	<DangerZone
 		needsConfirm={Boolean(form && 'needsDeleteConfirm' in form && form.needsDeleteConfirm)}
-		confirmLabel="Yes, delete permanently"
+		confirmLabel={m.group_deletePermanentlyCta()}
 		cancelHref={resolve('/groups/[id]/expenses/[expenseId]', {
 			id: data.expense.groupId,
 			expenseId: data.expense.id
 		})}
-		deleteLabel="Delete expense"
+		deleteLabel={m.expense_deleteExpenseCta()}
 	>
 		{#snippet confirmMessage()}
-			Are you sure you want to delete <strong>{data.expense.description}</strong>? This cannot be
-			undone.
+			{m.common_deleteConfirmPrefix()}
+			<strong>{data.expense.description}</strong>{m.expense_deleteConfirmSuffix()}
 		{/snippet}
 	</DangerZone>
 {/if}

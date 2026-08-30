@@ -2,6 +2,7 @@ import { and, desc, eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { expense, expenseConsumption } from '$lib/server/db/schema';
+import * as m from '$lib/paraglide/messages';
 
 export const load: PageServerLoad = async ({ params, locals, parent }) => {
 	const { group, members } = await parent();
@@ -33,7 +34,10 @@ export const load: PageServerLoad = async ({ params, locals, parent }) => {
 				id: e.id,
 				description: e.description,
 				amountCents: e.amountCents,
-				paidByName: e.paidByUser === userId ? 'you' : (memberNames.get(e.paidByUser) ?? 'Unknown'),
+				paidByName:
+					e.paidByUser === userId
+						? m.common_youLower()
+						: (memberNames.get(e.paidByUser) ?? m.common_unknown()),
 				createdAt: e.createdAt,
 				myEffectCents: paidCents - consumedCents
 			};

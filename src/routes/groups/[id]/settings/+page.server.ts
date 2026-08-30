@@ -4,6 +4,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { group } from '$lib/server/db/schema';
 import { requireGroupMembership } from '$lib/server/groups';
+import * as m from '$lib/paraglide/messages';
 
 export const load: PageServerLoad = async ({ params, locals, url }) => {
 	if (!locals.user) redirect(302, `/login?redirectTo=${encodeURIComponent(url.pathname)}`);
@@ -22,7 +23,7 @@ export const actions: Actions = {
 		const name = form.get('name');
 
 		if (typeof name !== 'string' || name.trim().length < 1 || name.trim().length > 100) {
-			return fail(400, { renameMessage: 'Please enter a group name.' });
+			return fail(400, { renameMessage: m.group_errorEnterName() });
 		}
 
 		await db.update(group).set({ name: name.trim() }).where(eq(group.id, params.id));

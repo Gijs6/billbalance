@@ -4,14 +4,15 @@
 	import Button from '$lib/components/Button.svelte';
 	import FieldLabel from '$lib/components/FieldLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
+	import * as m from '$lib/paraglide/messages';
 	import type { ActionData } from './$types';
 
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<PageTitle title="New group" />
+<PageTitle title={m.group_newGroupCta()} />
 
-<h1>New group</h1>
+<h1>{m.group_newGroupCta()}</h1>
 
 <form method="POST" class="form" use:enhance>
 	{#if form?.message}
@@ -19,7 +20,7 @@
 	{/if}
 
 	<div class="form__field">
-		<FieldLabel for="name">Group name</FieldLabel>
+		<FieldLabel for="name">{m.group_nameFieldLabel()}</FieldLabel>
 		<input
 			class="form__input"
 			id="name"
@@ -32,7 +33,7 @@
 	</div>
 
 	<div class="form__actions">
-		<Button type="submit">Create group</Button>
-		<Button variant="secondary" href={resolve('/')}>Cancel</Button>
+		<Button type="submit">{m.group_createCta()}</Button>
+		<Button variant="secondary" href={resolve('/')}>{m.common_cancel()}</Button>
 	</div>
 </form>

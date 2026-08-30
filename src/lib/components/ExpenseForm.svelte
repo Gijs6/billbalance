@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { centsToInputValue, parseEuros, splitEqual } from '$lib/money';
+	import * as m from '$lib/paraglide/messages';
 	import Button from './Button.svelte';
 	import FieldLabel from './FieldLabel.svelte';
 
@@ -39,7 +40,7 @@
 	} = $props();
 
 	function memberLabel(member: MemberInfo): string {
-		return member.id === currentUserId ? 'You' : member.name;
+		return member.id === currentUserId ? m.common_you() : member.name;
 	}
 
 	// svelte-ignore state_referenced_locally
@@ -97,7 +98,7 @@
 	{/if}
 
 	<div class="form__field">
-		<FieldLabel for="description">Description</FieldLabel>
+		<FieldLabel for="description">{m.expense_descriptionLabel()}</FieldLabel>
 		<input
 			class="form__input"
 			id="description"
@@ -110,7 +111,7 @@
 	</div>
 
 	<div class="form__field">
-		<FieldLabel for="amount">Total amount (€)</FieldLabel>
+		<FieldLabel for="amount">{m.expense_amountLabel()}</FieldLabel>
 		<input
 			class="form__input"
 			id="amount"
@@ -124,7 +125,7 @@
 	</div>
 
 	<div class="form__field">
-		<FieldLabel for="paidByUser">Paid by</FieldLabel>
+		<FieldLabel for="paidByUser">{m.expense_paidByLabel()}</FieldLabel>
 		<select class="form__select" id="paidByUser" name="paidByUser" bind:value={paidByUser} required>
 			{#each members as member (member.id)}
 				<option value={member.id}>{memberLabel(member)}</option>
@@ -133,12 +134,11 @@
 	</div>
 
 	<fieldset class="form__field">
-		<legend class="form__label">Split between</legend>
+		<legend class="form__label">{m.expense_splitBetweenLegend()}</legend>
 		<p class="form__hint">
-			Choose who consumed part of this expense, and how much. Use "Split equally" to split evenly
-			among the selected members.
+			{m.expense_splitHint()}
 		</p>
-		<Button variant="secondary" block onclick={equalize}>Split equally</Button>
+		<Button variant="secondary" block onclick={equalize}>{m.expense_splitEquallyCta()}</Button>
 		<div class="form__checkbox-group">
 			{#each members as member (member.id)}
 				<div class="form__checkbox-row">
@@ -155,9 +155,9 @@
 						inputmode="decimal"
 						placeholder="0.00"
 						name="consumed_{member.id}"
-						aria-label="{member.id === currentUserId
-							? 'Your'
-							: `${member.name}'s`} consumed amount in euros"
+						aria-label={member.id === currentUserId
+							? m.expense_consumedAmountAriaOwn()
+							: m.expense_consumedAmountAriaOther({ name: member.name })}
 						disabled={!consumption[member.id].checked}
 						bind:value={consumption[member.id].consumed}
 						oninput={() => onConsumedInput(member.id)}

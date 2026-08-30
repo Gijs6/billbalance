@@ -27,7 +27,11 @@ function createAuth() {
 			revokeSessionsOnPasswordReset: true,
 			sendResetPassword: async ({ user, token }, request) => {
 				const origin = request ? new URL(request.url).origin : env.ORIGIN;
-				await sendPasswordResetEmail(user.email, `${origin}/reset-password/${token}`);
+				await sendPasswordResetEmail(
+					user.email,
+					`${origin}/reset-password/${token}`,
+					(user as { locale?: string }).locale
+				);
 			}
 		},
 		user: {

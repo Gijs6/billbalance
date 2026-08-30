@@ -6,6 +6,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import * as m from '$lib/paraglide/messages';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -19,14 +20,16 @@
 	});
 </script>
 
-<PageTitle title="Expenses" />
+<PageTitle title={m.group_tabExpenses()} />
 
 {#if !data.isClosed}
 	<p class="form__actions">
-		<Button href={resolve('/groups/[id]/expenses/new', { id: groupId })}>Add expense</Button>
+		<Button href={resolve('/groups/[id]/expenses/new', { id: groupId })}>
+			{m.expenses_addCta()}
+		</Button>
 	</p>
 {:else}
-	<p class="form__hint">This group is closed. No new expenses can be added.</p>
+	<p class="form__hint">{m.expenses_closedHint()}</p>
 {/if}
 
 {#if data.expenses.length > 0}
@@ -43,19 +46,23 @@
 					<span>
 						<span class="list-item__title">{expense.description}</span><br />
 						<span class="list-item__meta"
-							>Paid by {expense.paidByName} · {dateFormatter.format(expense.createdAt)}</span
+							>{m.expenses_paidByMeta({ name: expense.paidByName })} · {dateFormatter.format(
+								expense.createdAt
+							)}</span
 						>
 					</span>
 					<span class="list-item__amounts">
 						<span class="balance">{formatCents(expense.amountCents, locale)}</span>
 						<BalanceLabel cents={expense.myEffectCents}>
 							{#snippet positive()}
-								<span class="balance">+{formatCents(expense.myEffectCents, locale)}</span> for your balance
+								<span class="balance">+{formatCents(expense.myEffectCents, locale)}</span>
+								{m.expenses_forYourBalance()}
 							{/snippet}
 							{#snippet negative()}
-								<span class="balance">{formatCents(expense.myEffectCents, locale)}</span> for your balance
+								<span class="balance">{formatCents(expense.myEffectCents, locale)}</span>
+								{m.expenses_forYourBalance()}
 							{/snippet}
-							{#snippet zero()}no effect on your balance{/snippet}
+							{#snippet zero()}{m.expenses_noBalanceEffect()}{/snippet}
 						</BalanceLabel>
 					</span>
 				</a>
@@ -64,9 +71,10 @@
 	</ul>
 {:else}
 	<p class="empty-state">
-		No expenses yet.
+		{m.expenses_emptyState()}
 		{#if !data.isClosed}
-			<a href={resolve('/groups/[id]/expenses/new', { id: groupId })}>Add the first one</a>.
+			<a href={resolve('/groups/[id]/expenses/new', { id: groupId })}>{m.expenses_addFirstCta()}</a
+			>.
 		{/if}
 	</p>
 {/if}

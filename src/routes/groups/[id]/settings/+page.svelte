@@ -5,30 +5,31 @@
 	import DangerZone from '$lib/components/DangerZone.svelte';
 	import FieldLabel from '$lib/components/FieldLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
+	import * as m from '$lib/paraglide/messages';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
 
-<PageTitle title="{data.group.name} settings" />
+<PageTitle title={m.group_settingsTitleSuffix({ name: data.group.name })} />
 
 <div class="page-header">
-	<h1>Group settings</h1>
+	<h1>{m.group_settingsHeading()}</h1>
 	<div class="page-header__actions">
 		<Button variant="secondary" href={resolve('/groups/[id]', { id: data.group.id })}>
-			Back to group
+			{m.group_backToGroupCta()}
 		</Button>
 	</div>
 </div>
 
 <section class="section" aria-labelledby="rename-heading">
-	<h2 id="rename-heading" class="section__title">Group name</h2>
+	<h2 id="rename-heading" class="section__title">{m.group_nameFieldLabel()}</h2>
 	<form method="POST" action="?/rename" class="form" use:enhance>
 		{#if form?.renameMessage}
 			<p class="form__error" role="alert">{form.renameMessage}</p>
 		{/if}
 		<div class="form__field">
-			<FieldLabel for="name">Name</FieldLabel>
+			<FieldLabel for="name">{m.common_name()}</FieldLabel>
 			<input
 				class="form__input"
 				id="name"
@@ -40,25 +41,25 @@
 			/>
 		</div>
 		<div class="form__actions">
-			<Button type="submit">Save name</Button>
+			<Button type="submit">{m.common_saveNameCta()}</Button>
 		</div>
 	</form>
 </section>
 
 <section class="section" aria-labelledby="danger-heading">
-	<h2 id="danger-heading" class="section__title">Delete group</h2>
+	<h2 id="danger-heading" class="section__title">{m.group_deleteHeading()}</h2>
 	<DangerZone
 		needsConfirm={Boolean(form?.needsDeleteConfirm)}
-		confirmLabel="Yes, delete permanently"
+		confirmLabel={m.group_deletePermanentlyCta()}
 		cancelHref={resolve('/groups/[id]/settings', { id: data.group.id })}
-		deleteLabel="Delete group"
+		deleteLabel={m.group_deleteGroupCta()}
 	>
 		{#snippet hint()}
-			Deleting a group removes it and all its expenses for everyone.
+			{m.group_deleteHint()}
 		{/snippet}
 		{#snippet confirmMessage()}
-			Are you sure you want to delete <strong>{data.group.name}</strong>? This permanently deletes
-			all its expenses and settlement history and cannot be undone.
+			{m.common_deleteConfirmPrefix()}
+			<strong>{data.group.name}</strong>{m.group_deleteConfirmSuffix()}
 		{/snippet}
 	</DangerZone>
 </section>

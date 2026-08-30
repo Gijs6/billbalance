@@ -11,23 +11,24 @@ import {
 } from '$lib/server/db/schema';
 import type { Group, Settlement } from '$lib/server/db/schema';
 import { simplifyDebts } from '$lib/money';
+import * as m from '$lib/paraglide/messages';
 
 export async function requireGroupMembership(groupId: string, userId: string): Promise<Group> {
 	const [row] = await db.select().from(group).where(eq(group.id, groupId));
-	if (!row) error(404, 'Group not found');
+	if (!row) error(404, m.group_notFoundError());
 
 	const [membership] = await db
 		.select()
 		.from(groupMember)
 		.where(and(eq(groupMember.groupId, groupId), eq(groupMember.userId, userId)));
-	if (!membership) error(404, 'Group not found');
+	if (!membership) error(404, m.group_notFoundError());
 
 	return row;
 }
 
 export function requireOpenGroup(currentGroup: Group): void {
 	if (currentGroup.status === 'closed') {
-		error(403, 'This group is closed and can no longer be changed.');
+		error(403, m.group_closedError());
 	}
 }
 
@@ -140,7 +141,7 @@ export async function getGroupSettlements(groupId: string): Promise<SettlementWi
 	return rows.map((r) => ({
 		...r.settlement,
 		fromName: r.fromName,
-		toName: toNameMap.get(r.settlement.toUser) ?? 'Unknown'
+		toName: toNameMap.get(r.settlement.toUser) ?? m.common_unknown()
 	}));
 }
 
@@ -149,9 +150,9 @@ export async function markSettlementPaid(
 	actingUserId: string
 ): Promise<void> {
 	const [row] = await db.select().from(settlement).where(eq(settlement.id, settlementId));
-	if (!row) error(404, 'Settlement not found');
+	if (!row) error(404, m.settlement_notFoundError());
 	if (row.fromUser !== actingUserId && row.toUser !== actingUserId) {
-		error(403, 'Only the two people involved in this payment can mark it as paid.');
+		error(403, m.settlement_markPaidForbiddenError());
 	}
 	if (row.status === 'paid') return;
 

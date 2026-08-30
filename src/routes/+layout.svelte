@@ -17,7 +17,7 @@
 
 <div class="layout">
 	{#if data.user}
-		<nav class="nav" aria-label="Main">
+		<nav class="nav" aria-label={m.nav_mainLabel()}>
 			<a class="nav__brand" href={resolve('/')}>billbalance</a>
 			<ul class="nav__links">
 				<li><a class="nav__link" href={resolve('/settings')}>{m.nav_settings()}</a></li>

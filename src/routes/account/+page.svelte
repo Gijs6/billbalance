@@ -5,25 +5,26 @@
 	import DangerZone from '$lib/components/DangerZone.svelte';
 	import FieldLabel from '$lib/components/FieldLabel.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
+	import * as m from '$lib/paraglide/messages';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
 
-<PageTitle title="Account" />
+<PageTitle title={m.account_title()} />
 
 <div class="page-header">
-	<h1>Account</h1>
+	<h1>{m.account_title()}</h1>
 </div>
 
 <section class="section" aria-labelledby="name-heading">
-	<h2 id="name-heading" class="section__title">Your name</h2>
+	<h2 id="name-heading" class="section__title">{m.account_nameHeading()}</h2>
 	<form method="POST" action="?/updateName" class="form" use:enhance>
 		{#if form?.nameMessage}
 			<p class="form__error" role="alert">{form.nameMessage}</p>
 		{/if}
 		<div class="form__field">
-			<FieldLabel for="name">Name</FieldLabel>
+			<FieldLabel for="name">{m.common_name()}</FieldLabel>
 			<input
 				class="form__input"
 				id="name"
@@ -36,19 +37,19 @@
 			/>
 		</div>
 		<div class="form__actions">
-			<Button type="submit">Save name</Button>
+			<Button type="submit">{m.common_saveNameCta()}</Button>
 		</div>
 	</form>
 </section>
 
 <section class="section" aria-labelledby="password-heading">
-	<h2 id="password-heading" class="section__title">Password</h2>
+	<h2 id="password-heading" class="section__title">{m.account_passwordHeading()}</h2>
 	<form method="POST" action="?/changePassword" class="form" use:enhance>
 		{#if form?.passwordMessage}
 			<p class="form__error" role="alert">{form.passwordMessage}</p>
 		{/if}
 		<div class="form__field">
-			<FieldLabel for="currentPassword">Current password</FieldLabel>
+			<FieldLabel for="currentPassword">{m.account_currentPasswordLabel()}</FieldLabel>
 			<input
 				class="form__input"
 				id="currentPassword"
@@ -59,7 +60,7 @@
 			/>
 		</div>
 		<div class="form__field">
-			<FieldLabel for="newPassword">New password</FieldLabel>
+			<FieldLabel for="newPassword">{m.account_newPasswordLabel()}</FieldLabel>
 			<input
 				class="form__input"
 				id="newPassword"
@@ -72,7 +73,7 @@
 			/>
 		</div>
 		<div class="form__field">
-			<FieldLabel for="confirmPassword">Confirm new password</FieldLabel>
+			<FieldLabel for="confirmPassword">{m.account_confirmNewPasswordLabel()}</FieldLabel>
 			<input
 				class="form__input"
 				id="confirmPassword"
@@ -84,36 +85,39 @@
 				required
 			/>
 		</div>
-		<p class="form__hint">Changing your password signs you out on your other devices.</p>
+		<p class="form__hint">{m.account_changePasswordHint()}</p>
 		<div class="form__actions">
-			<Button type="submit">Change password</Button>
+			<Button type="submit">{m.account_changePasswordCta()}</Button>
 		</div>
 	</form>
 </section>
 
 <section class="section" aria-labelledby="danger-heading">
-	<h2 id="danger-heading" class="section__title">Delete account</h2>
+	<h2 id="danger-heading" class="section__title">{m.account_deleteHeading()}</h2>
 	{#if form?.deleteMessage}
 		<p class="form__error" role="alert">{form.deleteMessage}</p>
 	{/if}
 	{#if data.groups.length > 0}
 		<p class="form__hint">
-			You can't delete your account while you belong to a group. Leave or delete
-			{data.groups.length === 1 ? 'it' : 'all of them'} first.
+			{m.account_cannotDeleteHint({
+				target:
+					data.groups.length === 1
+						? m.account_cannotDeleteTargetOne()
+						: m.account_cannotDeleteTargetMany()
+			})}
 		</p>
 	{:else}
 		<DangerZone
 			needsConfirm={Boolean(form?.needsDeleteConfirm)}
-			confirmLabel="Yes, delete my account"
+			confirmLabel={m.account_deleteConfirmCta()}
 			cancelHref={resolve('/account')}
-			deleteLabel="Delete account"
+			deleteLabel={m.account_deleteAccountCta()}
 		>
 			{#snippet hint()}
-				Deleting your account removes your profile permanently.
+				{m.account_deleteHint()}
 			{/snippet}
 			{#snippet confirmMessage()}
-				Are you sure you want to delete your account? This permanently deletes your profile and
-				cannot be undone.
+				{m.account_deleteConfirmMessage()}
 			{/snippet}
 		</DangerZone>
 	{/if}

@@ -4,6 +4,7 @@
 	import { resolve } from '$app/paths';
 	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
+	import * as m from '$lib/paraglide/messages';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -11,26 +12,31 @@
 	const redirectTo = `/join/${page.params.code}`;
 </script>
 
-<PageTitle title="Join {data.group.name}" />
+<PageTitle title={m.join_joinNamedCta({ name: data.group.name })} />
 
-<h1>You've been invited to join <em>{data.group.name}</em></h1>
+<h1>{m.join_invitedHeadingPrefix()} <em>{data.group.name}</em></h1>
 
 {#if !data.user}
-	<p>Log in or create an account to join this group.</p>
+	<p>{m.join_loginPrompt()}</p>
 	<p class="form__actions">
-		<Button href={resolve(`/login?redirectTo=${encodeURIComponent(redirectTo)}`)}>Log in</Button>
+		<Button href={resolve(`/login?redirectTo=${encodeURIComponent(redirectTo)}`)}>
+			{m.common_logIn()}
+		</Button>
 		<Button
 			variant="secondary"
-			href={resolve(`/register?redirectTo=${encodeURIComponent(redirectTo)}`)}>Sign up</Button
+			href={resolve(`/register?redirectTo=${encodeURIComponent(redirectTo)}`)}
+			>{m.common_signUp()}</Button
 		>
 	</p>
 {:else if data.alreadyMember}
-	<p>You're already a member of this group.</p>
-	<p><Button href={resolve('/groups/[id]', { id: data.group.id })}>Go to group</Button></p>
+	<p>{m.join_alreadyMember()}</p>
+	<p>
+		<Button href={resolve('/groups/[id]', { id: data.group.id })}>{m.join_goToGroupCta()}</Button>
+	</p>
 {:else if data.isClosed}
-	<p>This group is closed and is no longer accepting new members.</p>
+	<p>{m.join_closedError()}</p>
 {:else}
 	<form method="POST" use:enhance>
-		<Button type="submit">Join {data.group.name}</Button>
+		<Button type="submit">{m.join_joinNamedCta({ name: data.group.name })}</Button>
 	</form>
 {/if}

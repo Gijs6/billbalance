@@ -2,6 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { group, groupMember } from '$lib/server/db/schema';
+import * as m from '$lib/paraglide/messages';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) redirect(302, '/login?redirectTo=/groups/new');
@@ -16,7 +17,7 @@ export const actions: Actions = {
 
 		if (typeof name !== 'string' || name.trim().length < 1 || name.trim().length > 100) {
 			return fail(400, {
-				message: 'Please enter a group name.',
+				message: m.group_errorEnterName(),
 				name: typeof name === 'string' ? name : ''
 			});
 		}

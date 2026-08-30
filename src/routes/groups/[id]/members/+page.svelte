@@ -2,6 +2,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import * as m from '$lib/paraglide/messages';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -22,38 +23,42 @@
 	});
 </script>
 
-<PageTitle title="{data.group.name} members" />
+<PageTitle title={m.members_titleSuffix({ name: data.group.name })} />
 
 <section class="section" aria-labelledby="join-heading">
-	<h2 id="join-heading" class="section__title">Join code</h2>
+	<h2 id="join-heading" class="section__title">{m.members_joinCodeHeading()}</h2>
 	<p class="form__hint">
-		Anyone with this code or link can join the group. Share it only with people you trust.
+		{m.members_joinCodeHint()}
 	</p>
 	<div class="join-code">
-		<p class="join-code__display" aria-label="Join code">{data.group.joinCode}</p>
+		<p class="join-code__display" aria-label={m.members_joinCodeLabel()}>{data.group.joinCode}</p>
 		<div class="join-code__link">
 			<input
 				class="form__input join-code__value"
 				type="text"
 				readonly
 				value={joinUrl}
-				aria-label="Join link"
+				aria-label={m.members_joinLinkAriaLabel()}
 				onclick={(e) => e.currentTarget.select()}
 			/>
 			<Button variant="secondary" onclick={copyLink}>
-				{copied ? 'Copied' : 'Copy'}
+				{copied ? m.common_copied() : m.common_copy()}
 			</Button>
 		</div>
 	</div>
 </section>
 
 <section class="section" aria-labelledby="members-heading">
-	<h2 id="members-heading" class="section__title">Members</h2>
+	<h2 id="members-heading" class="section__title">{m.group_tabMembers()}</h2>
 	<ul class="list">
 		{#each data.members as member (member.id)}
 			<li class="list-item">
-				<span class="list-item__title">{member.id === data.user?.id ? 'You' : member.name}</span>
-				<span class="list-item__meta">Member since {dateFormatter.format(member.joinedAt)}</span>
+				<span class="list-item__title"
+					>{member.id === data.user?.id ? m.common_you() : member.name}</span
+				>
+				<span class="list-item__meta"
+					>{m.members_memberSince({ date: dateFormatter.format(member.joinedAt) })}</span
+				>
 			</li>
 		{/each}
 	</ul>

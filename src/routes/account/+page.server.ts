@@ -4,6 +4,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { auth } from '$lib/server/auth';
 import { setFlash } from '$lib/server/flash';
 import { getUserGroups } from '$lib/server/groups';
+import * as m from '$lib/paraglide/messages';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	if (!locals.user) redirect(302, `/login?redirectTo=${encodeURIComponent(url.pathname)}`);
@@ -21,7 +22,7 @@ export const actions: Actions = {
 		const name = form.get('name');
 
 		if (typeof name !== 'string' || name.trim().length < 1 || name.trim().length > 100) {
-			return fail(400, { nameMessage: 'Please enter your name.' });
+			return fail(400, { nameMessage: m.auth_errorEnterName() });
 		}
 
 		await auth.api.updateUser({ body: { name: name.trim() }, headers: request.headers });
@@ -38,13 +39,13 @@ export const actions: Actions = {
 		const confirmPassword = form.get('confirmPassword');
 
 		if (typeof currentPassword !== 'string' || !currentPassword) {
-			return fail(400, { passwordMessage: 'Please enter your current password.' });
+			return fail(400, { passwordMessage: m.account_errorEnterCurrentPassword() });
 		}
 		if (typeof newPassword !== 'string' || newPassword.length < 8 || newPassword.length > 255) {
-			return fail(400, { passwordMessage: 'New password must be at least 8 characters.' });
+			return fail(400, { passwordMessage: m.account_errorNewPasswordTooShort() });
 		}
 		if (newPassword !== confirmPassword) {
-			return fail(400, { passwordMessage: 'New passwords do not match.' });
+			return fail(400, { passwordMessage: m.account_errorPasswordsDontMatch() });
 		}
 
 		try {
@@ -54,12 +55,12 @@ export const actions: Actions = {
 			});
 		} catch (error) {
 			if (error instanceof APIError) {
-				return fail(400, { passwordMessage: 'Current password is incorrect.' });
+				return fail(400, { passwordMessage: m.account_errorIncorrectCurrentPassword() });
 			}
 			throw error;
 		}
 
-		setFlash(cookies, 'Password updated.');
+		setFlash(cookies, m.account_flashPasswordUpdated());
 		redirect(303, '/account');
 	},
 
@@ -69,7 +70,7 @@ export const actions: Actions = {
 		const groups = await getUserGroups(locals.user.id);
 		if (groups.length > 0) {
 			return fail(400, {
-				deleteMessage: 'Leave or delete all your groups before deleting your account.'
+				deleteMessage: m.account_errorLeaveGroupsFirst()
 			});
 		}
 

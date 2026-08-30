@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import type { ResolvedPathname } from '$app/types';
 	import type { Snippet } from 'svelte';
+	import * as m from '$lib/paraglide/messages';
 	import Button from './Button.svelte';
 
 	let {
@@ -29,7 +30,7 @@
 		<form method="POST" {action} class="form__actions" use:enhance>
 			<input type="hidden" name="confirm" value="true" />
 			<Button type="submit" variant="danger">{confirmLabel}</Button>
-			<Button variant="secondary" href={cancelHref}>Cancel</Button>
+			<Button variant="secondary" href={cancelHref}>{m.common_cancel()}</Button>
 		</form>
 	{:else}
 		{#if hint}
