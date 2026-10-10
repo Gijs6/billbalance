@@ -1,42 +1,59 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
 	import '$lib/styles/app.css';
+	import { dev } from '$app/environment';
 	import { resolve } from '$app/paths';
-	import Button from '$lib/components/Button.svelte';
+	import { page } from '$app/state';
 	import Footer from '$lib/components/Footer.svelte';
+	import Mark from '$lib/components/Mark.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import * as m from '$lib/paraglide/messages';
 	import type { LayoutProps } from './$types';
 
 	let { data, children }: LayoutProps = $props();
+
+	const theme = dev ? 'http://localhost:8000/theme/v2' : 'https://cdn.gijs6.nl/theme/v2';
+
+	const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
+	const isError = $derived(page.error != null);
+	const isNarrow = $derived(isError || AUTH_PATHS.some((p) => page.url.pathname.startsWith(p)));
+
+	function current(path: string) {
+		return page.url.pathname.startsWith(path) ? 'page' : undefined;
+	}
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link rel="icon" href={favicon} type="image/svg+xml" />
+	<link rel="alternate icon" href="/favicon.ico" />
+	<link rel="stylesheet" href="{theme}/all.css" />
+	<link rel="stylesheet" href="{theme}/accent/lime.css" />
+	<script src="{theme}/js/toast.js" defer></script>
 </svelte:head>
 
-<div class="layout">
-	{#if data.user}
-		<nav class="nav" aria-label={m.nav_mainLabel()}>
-			<a class="nav__brand" href={resolve('/')}>billbalance</a>
-			<ul class="nav__links">
-				<li><a class="nav__link" href={resolve('/settings')}>{m.nav_settings()}</a></li>
-				<li><a class="nav__link" href={resolve('/account')}>{data.user.name}</a></li>
-				<li>
-					<form method="POST" action="/logout">
-						<Button type="submit" variant="secondary" small>{m.common_logOut()}</Button>
-					</form>
-				</li>
-			</ul>
-		</nav>
-	{/if}
-	<main class="layout__main">
-		{@render children()}
-	</main>
-	{#if !data.user}
-		<Footer />
-	{/if}
-	{#if data.flash}
-		<Toast message={data.flash} />
-	{/if}
-</div>
+<header class="navbar">
+	<div class="navbar__inner">
+		<a class="navbar__brand" href={resolve('/')}><Mark />Billbalance</a>
+		{#if data.user && !isNarrow}
+			<nav class="navbar__links" aria-label={m.nav_mainLabel()}>
+				<a href={resolve('/settings')} aria-current={current('/settings')}>{m.nav_settings()}</a>
+				<a href={resolve('/account')} aria-current={current('/account')}>{data.user.name}</a>
+				<form method="POST" action="/logout">
+					<button type="submit">{m.common_signOut()}</button>
+				</form>
+			</nav>
+		{/if}
+	</div>
+</header>
+
+<main class={['page', isNarrow && 'page--narrow', isError && 'error']}>
+	{@render children()}
+</main>
+
+{#if !data.user && !isError}
+	<Footer />
+{/if}
+
+{#if data.flash}
+	<Toast message={data.flash} />
+{/if}
