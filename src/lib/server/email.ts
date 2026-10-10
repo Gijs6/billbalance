@@ -19,7 +19,7 @@ function getTransport() {
 	});
 }
 
-const SENDER_NAME = 'billbalance';
+const SENDER_NAME = 'Billbalance';
 
 export async function sendPasswordResetEmail(email: string, resetUrl: string, userLocale?: string) {
 	const transport = getTransport();
