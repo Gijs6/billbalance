@@ -12,26 +12,21 @@
 
 <PageTitle title={m.auth_forgotTitle()} />
 
-<h1>{m.auth_forgotHeading()}</h1>
+<div class="page-head">
+	<h1>{m.auth_forgotHeading()}</h1>
+</div>
 
 {#if form?.sent}
 	<p>{m.auth_forgotSent()}</p>
 {:else}
-	<form method="POST" class="form" use:enhance>
+	<form method="POST" use:enhance>
 		{#if form?.message}
-			<p class="form__error" role="alert">{form.message}</p>
+			<p class="alert alert--danger" role="alert">{form.message}</p>
 		{/if}
 
-		<div class="form__field">
+		<div class="field">
 			<FieldLabel for="email">{m.common_email()}</FieldLabel>
-			<input
-				class="form__input"
-				id="email"
-				type="email"
-				name="email"
-				autocomplete="email"
-				required
-			/>
+			<input id="email" type="email" name="email" autocomplete="email" required />
 		</div>
 
 		<div class="form__actions">
@@ -40,4 +35,4 @@
 	</form>
 {/if}
 
-<p><a href={resolve('/login')}>{m.auth_backToLoginLink()}</a></p>
+<p><a href={resolve('/login')}>{m.auth_backToSignInLink()}</a></p>

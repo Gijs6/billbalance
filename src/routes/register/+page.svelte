@@ -18,30 +18,23 @@
 
 <PageTitle title={m.common_signUp()} />
 
-<h1>{m.auth_registerHeading()}</h1>
+<div class="page-head">
+	<h1>{m.auth_registerHeading()}</h1>
+</div>
 
-<form method="POST" class="form" use:enhance>
+<form method="POST" use:enhance>
 	{#if form?.message}
-		<p class="form__error" role="alert">{form.message}</p>
+		<p class="alert alert--danger" role="alert">{form.message}</p>
 	{/if}
 
-	<div class="form__field">
+	<div class="field">
 		<FieldLabel for="name">{m.common_name()}</FieldLabel>
-		<input
-			class="form__input"
-			id="name"
-			type="text"
-			name="name"
-			autocomplete="name"
-			required
-			maxlength="100"
-		/>
+		<input id="name" type="text" name="name" autocomplete="name" required maxlength="100" />
 	</div>
 
-	<div class="form__field">
+	<div class="field">
 		<FieldLabel for="email">{m.common_email()}</FieldLabel>
 		<input
-			class="form__input"
 			id="email"
 			type="email"
 			name="email"
@@ -51,10 +44,9 @@
 		/>
 	</div>
 
-	<div class="form__field">
+	<div class="field">
 		<FieldLabel for="password">{m.common_password()}</FieldLabel>
 		<input
-			class="form__input"
 			id="password"
 			type="password"
 			name="password"
@@ -69,4 +61,4 @@
 	</div>
 </form>
 
-<p>{m.auth_alreadyHaveAccountPrefix()} <a href={loginHref}>{m.common_logIn()}</a></p>
+<p>{m.auth_alreadyHaveAccountPrefix()} <a href={loginHref}>{m.common_signIn()}</a></p>

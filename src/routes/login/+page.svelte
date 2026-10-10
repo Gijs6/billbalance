@@ -19,35 +19,36 @@
 	let showEmailLogin = $state(untrack(() => data.dummyUsers.length === 0));
 </script>
 
-<PageTitle title={m.common_logIn()} />
+<PageTitle title={m.common_signIn()} />
 
-<h1>{m.common_logIn()}</h1>
+<div class="page-head">
+	<h1>{m.common_signIn()}</h1>
+</div>
 
 {#if data.dummyUsers.length > 0 && !showEmailLogin}
-	<div class="dummy-login">
+	<div class="form__actions dummy-login">
 		{#each data.dummyUsers as dummyUser (dummyUser.id)}
 			<form method="POST" action="?/dummy" use:enhance>
 				<input type="hidden" name="userId" value={dummyUser.id} />
-				<Button type="submit" variant="secondary">{dummyUser.name}</Button>
+				<Button type="submit">{dummyUser.name}</Button>
 			</form>
 		{/each}
 	</div>
 
 	<p>
 		<Button type="button" variant="link" onclick={() => (showEmailLogin = true)}>
-			{m.auth_loginWithEmailCta()}
+			{m.auth_signInWithEmailCta()}
 		</Button>
 	</p>
 {:else}
-	<form method="POST" action="?/login" class="form" use:enhance>
+	<form method="POST" action="?/login" use:enhance>
 		{#if form?.message}
-			<p class="form__error" role="alert">{form.message}</p>
+			<p class="alert alert--danger" role="alert">{form.message}</p>
 		{/if}
 
-		<div class="form__field">
+		<div class="field">
 			<FieldLabel for="email">{m.common_email()}</FieldLabel>
 			<input
-				class="form__input"
 				id="email"
 				type="email"
 				name="email"
@@ -57,10 +58,9 @@
 			/>
 		</div>
 
-		<div class="form__field">
+		<div class="field">
 			<FieldLabel for="password">{m.common_password()}</FieldLabel>
 			<input
-				class="form__input"
 				id="password"
 				type="password"
 				name="password"
@@ -70,7 +70,7 @@
 		</div>
 
 		<div class="form__actions">
-			<Button type="submit">{m.common_logIn()}</Button>
+			<Button type="submit">{m.common_signIn()}</Button>
 		</div>
 	</form>
 

@@ -11,17 +11,18 @@
 
 <PageTitle title={m.auth_resetTitle()} />
 
-<h1>{m.auth_resetTitle()}</h1>
+<div class="page-head">
+	<h1>{m.auth_resetTitle()}</h1>
+</div>
 
-<form method="POST" class="form" use:enhance>
+<form method="POST" use:enhance>
 	{#if form?.message}
-		<p class="form__error" role="alert">{form.message}</p>
+		<p class="alert alert--danger" role="alert">{form.message}</p>
 	{/if}
 
-	<div class="form__field">
+	<div class="field">
 		<FieldLabel for="password">{m.auth_resetNewPasswordLabel()}</FieldLabel>
 		<input
-			class="form__input"
 			id="password"
 			type="password"
 			name="password"
