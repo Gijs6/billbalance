@@ -1,31 +1,37 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { LOCALE_OPTIONS } from '$lib/locales';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';
+	import Mark from './Mark.svelte';
 
 	const currentLocale = $derived(getLocale());
 </script>
 
 <footer class="footer">
-	<form method="POST" action="/set-locale" class="footer__locales">
-		<input type="hidden" name="redirectTo" value={page.url.pathname} />
-		<span class="footer__locales-label" id="footer-locale-label"
-			>{m.settings_languageHeading()}</span
-		>
-		<span class="footer__locale-buttons" role="group" aria-labelledby="footer-locale-label">
-			{#each LOCALE_OPTIONS as option (option.value)}
-				<button
-					type="submit"
-					name="locale"
-					value={option.value}
-					class="footer__locale-button"
-					class:footer__locale-button--active={option.value === currentLocale}
-					aria-pressed={option.value === currentLocale}
-				>
-					{option.label}
-				</button>
-			{/each}
-		</span>
-	</form>
+	<div class="footer__inner">
+		<p>
+			<a class="footer__app" href={resolve('/')}><Mark />Billbalance</a> by
+			<a href="https://gijs6.nl">Gijs6</a>
+		</p>
+		<form method="POST" action="/set-locale" class="locale-switch">
+			<input type="hidden" name="redirectTo" value={page.url.pathname} />
+			<span id="footer-locale-label">{m.settings_languageHeading()}:</span>
+			<span class="locale-switch__options" role="group" aria-labelledby="footer-locale-label">
+				{#each LOCALE_OPTIONS as option (option.value)}
+					<button
+						type="submit"
+						name="locale"
+						value={option.value}
+						class="locale-switch__option"
+						aria-pressed={option.value === currentLocale}
+					>
+						{option.label}
+					</button>
+				{/each}
+			</span>
+		</form>
+		<p><a href="https://unlicense.org" rel="license">Unlicensed</a></p>
+	</div>
 </footer>
