@@ -16,17 +16,18 @@
 
 <PageTitle title={m.join_title()} />
 
-<h1>{m.join_title()}</h1>
+<div class="page-head">
+	<h1>{m.join_title()}</h1>
+</div>
 
-<form method="POST" class="form" use:enhance>
+<form method="POST" use:enhance>
 	{#if form?.message}
-		<p class="form__error" role="alert">{form.message}</p>
+		<p class="alert alert--danger" role="alert">{form.message}</p>
 	{/if}
 
-	<div class="form__field">
+	<div class="field">
 		<FieldLabel for="code">{m.join_codeLabel()}</FieldLabel>
 		<input
-			class="form__input"
 			id="code"
 			name="code"
 			type="text"

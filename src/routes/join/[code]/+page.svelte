@@ -14,17 +14,17 @@
 
 <PageTitle title={m.join_joinNamedCta({ name: data.group.name })} />
 
-<h1>{m.join_invitedHeadingPrefix()} <em>{data.group.name}</em></h1>
+<div class="page-head">
+	<h1>{m.join_invitedHeadingPrefix()} <em>{data.group.name}</em></h1>
+</div>
 
 {#if !data.user}
-	<p>{m.join_loginPrompt()}</p>
+	<p>{m.join_signInPrompt()}</p>
 	<p class="form__actions">
 		<Button href={resolve(`/login?redirectTo=${encodeURIComponent(redirectTo)}`)}>
-			{m.common_logIn()}
+			{m.common_signIn()}
 		</Button>
-		<Button
-			variant="secondary"
-			href={resolve(`/register?redirectTo=${encodeURIComponent(redirectTo)}`)}
+		<Button href={resolve(`/register?redirectTo=${encodeURIComponent(redirectTo)}`)}
 			>{m.common_signUp()}</Button
 		>
 	</p>
