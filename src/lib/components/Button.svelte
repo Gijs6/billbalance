@@ -3,18 +3,16 @@
 	import type { Snippet } from 'svelte';
 
 	let {
-		variant = 'primary',
+		variant = 'default',
 		small = false,
-		block = false,
 		href,
 		type = 'button',
 		onclick,
 		disabled = false,
 		children
 	}: {
-		variant?: 'primary' | 'secondary' | 'danger' | 'link';
+		variant?: 'default' | 'danger' | 'link';
 		small?: boolean;
-		block?: boolean;
 		href?: ResolvedPathname;
 		type?: 'button' | 'submit';
 		onclick?: (event: MouseEvent) => void;
@@ -23,14 +21,9 @@
 	} = $props();
 
 	const classes = $derived(
-		[
-			'button',
-			variant !== 'primary' && `button--${variant}`,
-			small && 'button--small',
-			block && 'button--block'
-		]
-			.filter(Boolean)
-			.join(' ')
+		variant === 'link'
+			? 'link-button'
+			: ['btn', variant === 'danger' && 'btn--danger', small && 'btn--sm'].filter(Boolean).join(' ')
 	);
 </script>
 

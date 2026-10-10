@@ -23,28 +23,28 @@
 	const isCurrentUser = $derived(person.id === currentUserId);
 </script>
 
-<li class="settlement-list__group">
-	<p class="settlement-list__person">
-		<span class="list-item__title">{isCurrentUser ? m.common_you() : person.name}</span>
-		<BalanceLabel
-			cents={direction === 'creditor' ? person.totalCents : -person.totalCents}
-			{isCurrentUser}
-		/>
-	</p>
-	<ul class="list">
-		{#each person.edges as edge (edge.id)}
-			<li class="list-item">
-				<span class="list-item__title"
-					>{direction === 'creditor'
-						? m.settlement_paidBy({
-								name: edge.fromUser === currentUserId ? m.common_youLower() : edge.fromName
-							})
-						: m.settlement_paidTo({
-								name: edge.toUser === currentUserId ? m.common_youLower() : edge.toName
-							})}</span
-				>
-				<SettlementEdgeStatus {edge} {currentUserId} {showStatus} allowMarkPaid={false} />
-			</li>
-		{/each}
-	</ul>
-</li>
+<tbody>
+	<tr class="settlement__person">
+		<th scope="rowgroup" colspan="3">
+			{isCurrentUser ? m.common_you() : person.name},
+			<BalanceLabel
+				cents={direction === 'creditor' ? person.totalCents : -person.totalCents}
+				{isCurrentUser}
+			/>
+		</th>
+	</tr>
+	{#each person.edges as edge (edge.id)}
+		<tr>
+			<td>
+				{direction === 'creditor'
+					? m.settlement_paidBy({
+							name: edge.fromUser === currentUserId ? m.common_youLower() : edge.fromName
+						})
+					: m.settlement_paidTo({
+							name: edge.toUser === currentUserId ? m.common_youLower() : edge.toName
+						})}
+			</td>
+			<SettlementEdgeStatus {edge} {currentUserId} {showStatus} allowMarkPaid={false} />
+		</tr>
+	{/each}
+</tbody>

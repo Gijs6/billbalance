@@ -92,15 +92,14 @@
 	}
 </script>
 
-<form method="POST" {action} class="form form--wide" use:enhance>
+<form method="POST" {action} use:enhance>
 	{#if message}
-		<p class="form__error" role="alert">{message}</p>
+		<p class="alert alert--danger" role="alert">{message}</p>
 	{/if}
 
-	<div class="form__field">
+	<div class="field">
 		<FieldLabel for="description">{m.expense_descriptionLabel()}</FieldLabel>
 		<input
-			class="form__input"
 			id="description"
 			name="description"
 			type="text"
@@ -110,10 +109,9 @@
 		/>
 	</div>
 
-	<div class="form__field">
+	<div class="field">
 		<FieldLabel for="amount">{m.expense_amountLabel()}</FieldLabel>
 		<input
-			class="form__input"
 			id="amount"
 			name="amount"
 			type="text"
@@ -124,24 +122,21 @@
 		/>
 	</div>
 
-	<div class="form__field">
+	<div class="field">
 		<FieldLabel for="paidByUser">{m.expense_paidByLabel()}</FieldLabel>
-		<select class="form__select" id="paidByUser" name="paidByUser" bind:value={paidByUser} required>
+		<select id="paidByUser" name="paidByUser" bind:value={paidByUser} required>
 			{#each members as member (member.id)}
 				<option value={member.id}>{memberLabel(member)}</option>
 			{/each}
 		</select>
 	</div>
 
-	<fieldset class="form__field">
-		<legend class="form__label">{m.expense_splitBetweenLegend()}</legend>
-		<p class="form__hint">
-			{m.expense_splitHint()}
-		</p>
-		<Button variant="secondary" block onclick={equalize}>{m.expense_splitEquallyCta()}</Button>
-		<div class="form__checkbox-group">
+	<fieldset class="fieldset split">
+		<legend>{m.expense_splitBetweenLegend()}</legend>
+		<p><Button onclick={equalize}>{m.expense_splitEquallyCta()}</Button></p>
+		<div class="split__rows">
 			{#each members as member (member.id)}
-				<div class="form__checkbox-row">
+				<div class="split__row">
 					<input
 						type="checkbox"
 						id="member_{member.id}"
@@ -150,7 +145,6 @@
 					/>
 					<label for="member_{member.id}">{memberLabel(member)}</label>
 					<input
-						class="form__input"
 						type="text"
 						inputmode="decimal"
 						placeholder="0.00"

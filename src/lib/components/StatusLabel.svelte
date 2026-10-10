@@ -11,7 +11,8 @@
 		children: Snippet;
 	} = $props();
 
-	const classes = $derived(['label', variant && `label--${variant}`].filter(Boolean).join(' '));
+	const tones = { paid: 'status--ok', pending: 'status--warn', negative: 'status--bad' };
+	const classes = $derived(['status', variant && tones[variant]].filter(Boolean).join(' '));
 </script>
 
 <span class={classes} {title}>{@render children()}</span>

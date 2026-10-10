@@ -35,15 +35,15 @@
 	const isReceiver = $derived(currentUserId === edge.toUser);
 </script>
 
-<span class="list-item__end">
-	<span class="balance">{formatCents(edge.amountCents, locale)}</span>
+<td class="table__num balance">{formatCents(edge.amountCents, locale)}</td>
+<td class="table__actions">
 	{#if showStatus}
 		{#if edge.status === 'paid'}
 			<StatusLabel variant="paid">{m.settlement_paidStatus()}</StatusLabel>
 		{:else if isParticipant && allowMarkPaid}
 			<form method="POST" action="?/markPaid" use:enhance>
 				<input type="hidden" name="settlementId" value={edge.id} />
-				<Button type="submit" variant="secondary" small>{m.settlement_markPaidCta()}</Button>
+				<Button type="submit" small>{m.settlement_markPaidCta()}</Button>
 			</form>
 		{:else if isPayer}
 			<StatusLabel variant="negative">{m.settlement_waitingForYou()}</StatusLabel>
@@ -53,4 +53,4 @@
 			<StatusLabel>{m.settlement_waiting()}</StatusLabel>
 		{/if}
 	{/if}
-</span>
+</td>

@@ -1,8 +1,8 @@
 <script module lang="ts">
 	export function balanceLabelClass(cents: number): string {
-		if (cents > 0) return 'balance-label balance-label--positive';
-		if (cents < 0) return 'balance-label balance-label--negative';
-		return 'balance-label balance-label--zero';
+		if (cents > 0) return 'status status--ok';
+		if (cents < 0) return 'status status--bad';
+		return 'muted';
 	}
 </script>
 
