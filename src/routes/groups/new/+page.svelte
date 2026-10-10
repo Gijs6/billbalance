@@ -12,28 +12,22 @@
 
 <PageTitle title={m.group_newGroupCta()} />
 
-<h1>{m.group_newGroupCta()}</h1>
+<div class="page-head">
+	<h1>{m.group_newGroupCta()}</h1>
+</div>
 
-<form method="POST" class="form" use:enhance>
+<form method="POST" use:enhance>
 	{#if form?.message}
-		<p class="form__error" role="alert">{form.message}</p>
+		<p class="alert alert--danger" role="alert">{form.message}</p>
 	{/if}
 
-	<div class="form__field">
+	<div class="field">
 		<FieldLabel for="name">{m.group_nameFieldLabel()}</FieldLabel>
-		<input
-			class="form__input"
-			id="name"
-			type="text"
-			name="name"
-			required
-			maxlength="100"
-			value={form?.name ?? ''}
-		/>
+		<input id="name" type="text" name="name" required maxlength="100" value={form?.name ?? ''} />
 	</div>
 
 	<div class="form__actions">
 		<Button type="submit">{m.group_createCta()}</Button>
-		<Button variant="secondary" href={resolve('/')}>{m.common_cancel()}</Button>
+		<Button href={resolve('/')}>{m.common_cancel()}</Button>
 	</div>
 </form>

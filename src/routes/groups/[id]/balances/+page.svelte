@@ -21,9 +21,7 @@
 <PageTitle title={m.group_tabBalances()} />
 
 {#if data.isClosed}
-	<p class="form__hint">
-		{m.balances_closedHint()}
-	</p>
+	<p class="alert">{m.balances_closedHint()}</p>
 {:else}
 	<p class="form__actions">
 		<Button href={resolve('/groups/[id]/settlement', { id: groupId })}>
@@ -32,50 +30,33 @@
 	</p>
 {/if}
 
-<ul class="list">
-	{#each data.members as member (member.id)}
-		<li>
-			<details class="balance-card">
-				<summary class="list-item">
-					<span class="list-item__title"
-						>{member.id === data.user?.id ? m.common_you() : member.name}</span
+<div class="table-wrap">
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">{m.group_tabMembers()}</th>
+				<th scope="col" class="table__num">{m.balances_paidLabel()}</th>
+				<th scope="col" class="table__num">{m.expense_consumedLabel()}</th>
+				<th scope="col" class="table__num">{m.balances_balanceLabel()}</th>
+				<th scope="col"><span class="visually-hidden">{m.balances_balanceLabel()}</span></th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each data.members as member (member.id)}
+				<tr>
+					<th scope="row" class="row__title"
+						>{member.id === data.user?.id ? m.common_you() : member.name}</th
 					>
-					<BalanceLabel cents={member.balanceCents} isCurrentUser={member.id === data.user?.id} />
-				</summary>
-				<div class="balance-equation">
-					<div class="balance-equation__grid">
-						<span class="balance-equation__label balance-equation__label--paid"
-							>{m.balances_paidLabel()}</span
-						>
-						<span class="balance-equation__label balance-equation__label--consumed"
-							>{m.expense_consumedLabel()}</span
-						>
-						<span class="balance-equation__label balance-equation__label--balance"
-							>{m.balances_balanceLabel()}</span
-						>
-
-						<span class="balance balance-equation__value--paid"
-							>{formatCents(member.paidCents, locale)}</span
-						>
-						<span
-							class="balance-equation__operator balance-equation__operator--minus"
-							aria-hidden="true">-</span
-						>
-						<span class="balance balance-equation__value--consumed"
-							>{formatCents(member.consumedCents, locale)}</span
-						>
-						<span
-							class="balance-equation__operator balance-equation__operator--equals"
-							aria-hidden="true">=</span
-						>
-						<span
-							class="balance balance-equation__value--balance {balanceLabelClass(
-								member.balanceCents
-							)}">{formatSignedCents(member.balanceCents)}</span
-						>
-					</div>
-				</div>
-			</details>
-		</li>
-	{/each}
-</ul>
+					<td class="table__num balance">{formatCents(member.paidCents, locale)}</td>
+					<td class="table__num balance">{formatCents(member.consumedCents, locale)}</td>
+					<td class="table__num balance {balanceLabelClass(member.balanceCents)}"
+						>{formatSignedCents(member.balanceCents)}</td
+					>
+					<td>
+						<BalanceLabel cents={member.balanceCents} isCurrentUser={member.id === data.user?.id} />
+					</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>

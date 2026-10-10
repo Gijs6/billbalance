@@ -30,42 +30,48 @@
 <PageTitle title={data.isClosed ? data.expense.description : m.expense_editTitle()} />
 
 {#if data.isClosed}
-	<h1>{data.expense.description}</h1>
-	<p class="form__hint">{m.expense_closedHint()}</p>
-	<dl class="card">
-		<dt class="form__label">{m.expense_totalLabel()}</dt>
-		<dd>{formatCents(data.expense.amountCents, locale)}</dd>
-		<dt class="form__label">{m.expense_paidByLabel()}</dt>
-		<dd>
-			{data.expense.paidByUser === data.user?.id
-				? m.common_youLower()
-				: memberName(data.expense.paidByUser)}
-		</dd>
-		<dt class="form__label">{m.expense_consumedLabel()}</dt>
-		<dd class="card__full">
-			<ul class="list">
-				{#each data.consumption as consumedAmount (consumedAmount.userId)}
-					<li class="list-item">
-						<span class="list-item__title"
-							>{consumedAmount.userId === data.user?.id
-								? m.common_you()
-								: memberName(consumedAmount.userId)}</span
-						>
-						<span class="balance">{formatCents(consumedAmount.amountCents, locale)}</span>
-					</li>
-				{/each}
-			</ul>
-		</dd>
-	</dl>
+	<h2>{data.expense.description}</h2>
+	<p class="alert">{m.expense_closedHint()}</p>
+	<table class="table table--kv">
+		<tbody>
+			<tr>
+				<th scope="row">{m.expense_totalLabel()}</th>
+				<td class="balance">{formatCents(data.expense.amountCents, locale)}</td>
+			</tr>
+			<tr>
+				<th scope="row">{m.expense_paidByLabel()}</th>
+				<td>
+					{data.expense.paidByUser === data.user?.id
+						? m.common_youLower()
+						: memberName(data.expense.paidByUser)}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<h3>{m.expense_consumedLabel()}</h3>
+	<table class="table">
+		<tbody>
+			{#each data.consumption as consumedAmount (consumedAmount.userId)}
+				<tr>
+					<td>
+						{consumedAmount.userId === data.user?.id
+							? m.common_you()
+							: memberName(consumedAmount.userId)}
+					</td>
+					<td class="table__num balance">{formatCents(consumedAmount.amountCents, locale)}</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
 {:else}
-	<h1>{m.expense_editTitle()}</h1>
+	<h2>{m.expense_editTitle()}</h2>
 
 	<ExpenseForm
 		members={data.members}
 		currentUserId={data.user?.id}
 		initialCreatedAt={data.expense.createdAt.getTime()}
 		action="?/update"
-		submitLabel={m.expense_saveChangesCta()}
+		submitLabel={m.expense_saveCta()}
 		message={form && 'message' in form ? form.message : undefined}
 		initialDescription={data.expense.description}
 		initialAmount={centsToInputValue(data.expense.amountCents)}
@@ -75,7 +81,7 @@
 
 	<DangerZone
 		needsConfirm={Boolean(form && 'needsDeleteConfirm' in form && form.needsDeleteConfirm)}
-		confirmLabel={m.group_deletePermanentlyCta()}
+		confirmLabel={m.expense_deleteExpenseCta()}
 		cancelHref={resolve('/groups/[id]/expenses/[expenseId]', {
 			id: data.expense.groupId,
 			expenseId: data.expense.id

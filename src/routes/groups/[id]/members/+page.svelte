@@ -8,12 +8,9 @@
 	let { data }: { data: PageData } = $props();
 
 	const joinUrl = $derived(`${data.origin}/join/${data.group.joinCode}`);
-	let copied = $state(false);
-
 	async function copyLink() {
 		await navigator.clipboard.writeText(joinUrl);
-		copied = true;
-		setTimeout(() => (copied = false), 1500);
+		window.toast(m.common_linkCopied(), { type: 'success' });
 	}
 
 	const dateFormatter = new Intl.DateTimeFormat(getLocale(), {
@@ -25,41 +22,40 @@
 
 <PageTitle title={m.members_titleSuffix({ name: data.group.name })} />
 
-<section class="section" aria-labelledby="join-heading">
-	<h2 id="join-heading" class="section__title">{m.members_joinCodeHeading()}</h2>
-	<p class="form__hint">
-		{m.members_joinCodeHint()}
-	</p>
-	<div class="join-code">
-		<p class="join-code__display" aria-label={m.members_joinCodeLabel()}>{data.group.joinCode}</p>
-		<div class="join-code__link">
+<section class="panel" aria-labelledby="join-heading">
+	<h2 id="join-heading" class="panel__heading">{m.members_joinCodeHeading()}</h2>
+	<div class="panel__body">
+		<p class="muted">{m.members_joinCodeHint()}</p>
+		<p class="join-code" aria-label={m.members_joinCodeLabel()}>{data.group.joinCode}</p>
+		<div class="input-row">
 			<input
-				class="form__input join-code__value"
 				type="text"
 				readonly
 				value={joinUrl}
 				aria-label={m.members_joinLinkAriaLabel()}
 				onclick={(e) => e.currentTarget.select()}
 			/>
-			<Button variant="secondary" onclick={copyLink}>
-				{copied ? m.common_copied() : m.common_copy()}
-			</Button>
+			<Button onclick={copyLink}>{m.common_copyLink()}</Button>
 		</div>
 	</div>
 </section>
 
-<section class="section" aria-labelledby="members-heading">
-	<h2 id="members-heading" class="section__title">{m.group_tabMembers()}</h2>
-	<ul class="list">
-		{#each data.members as member (member.id)}
-			<li class="list-item">
-				<span class="list-item__title"
-					>{member.id === data.user?.id ? m.common_you() : member.name}</span
-				>
-				<span class="list-item__meta"
-					>{m.members_memberSince({ date: dateFormatter.format(member.joinedAt) })}</span
-				>
-			</li>
-		{/each}
-	</ul>
+<section class="panel" aria-labelledby="members-heading">
+	<h2 id="members-heading" class="panel__heading">{m.group_tabMembers()}</h2>
+	<div class="table-wrap">
+		<table class="table">
+			<tbody>
+				{#each data.members as member (member.id)}
+					<tr>
+						<th scope="row" class="row__title"
+							>{member.id === data.user?.id ? m.common_you() : member.name}</th
+						>
+						<td class="muted"
+							>{m.members_memberSince({ date: dateFormatter.format(member.joinedAt) })}</td
+						>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </section>

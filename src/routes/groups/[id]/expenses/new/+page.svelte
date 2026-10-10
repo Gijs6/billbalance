@@ -9,7 +9,7 @@
 
 <PageTitle title={m.expenses_addCta()} />
 
-<h1>{m.expenses_addCta()}</h1>
+<h2>{m.expenses_addCta()}</h2>
 
 <ExpenseForm
 	members={data.members}
