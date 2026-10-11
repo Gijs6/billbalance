@@ -9,7 +9,7 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
-<PageTitle />
+<PageTitle title={data.user ? m.home_yourGroupsHeading() : undefined} />
 
 {#if data.user}
 	<div class="page-head">
