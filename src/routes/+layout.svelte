@@ -24,8 +24,8 @@
 
 <svelte:head>
 	<meta name="description" content={m.home_tagline() + '.'} />
-	<meta name="theme-color" content="#677a01" media="(prefers-color-scheme: light)" />
-	<meta name="theme-color" content="#566600" media="(prefers-color-scheme: dark)" />
+	<meta name="theme-color" content="#3e8400" media="(prefers-color-scheme: light)" />
+	<meta name="theme-color" content="#3a7b01" media="(prefers-color-scheme: dark)" />
 	<link rel="icon" href={favicon} type="image/svg+xml" />
 	<link rel="alternate icon" href="/favicon.ico" />
 	<link rel="stylesheet" href="{theme}/all.css" />
