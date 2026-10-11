@@ -26,7 +26,10 @@
 	<h2 id="join-heading" class="panel__heading">{m.members_joinCodeHeading()}</h2>
 	<div class="panel__body">
 		<p class="muted">{m.members_joinCodeHint()}</p>
-		<p class="join-code" aria-label={m.members_joinCodeLabel()}>{data.group.joinCode}</p>
+		<p class="join-code">
+			<span class="visually-hidden">{m.members_joinCodeLabel()}:</span>
+			{data.group.joinCode}
+		</p>
 		<div class="input-row">
 			<input
 				type="text"
