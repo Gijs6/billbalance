@@ -107,3 +107,7 @@
 .expense-delete {
 	margin-block-start: var(--space-2xl);
 }
+
+p.form__actions {
+	margin-block-end: var(--space-2xl);
+}
