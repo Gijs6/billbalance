@@ -7,12 +7,13 @@ import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
 import { auth } from '$lib/server/auth';
 import { safeRedirectTarget } from '$lib/server/safe-redirect';
+import { DEV_EMAIL } from '$lib/server/dev-user';
 import * as m from '$lib/paraglide/messages';
 
-const DUMMY_EMAIL_PATTERNS = ['seed%@test.com'];
+const DUMMY_EMAIL_PATTERNS = [DEV_EMAIL, 'seed%@test.com'];
 
 function isDummyUser(email: string): boolean {
-	return /^seed[^@]+@test\.com$/.test(email);
+	return email === DEV_EMAIL || /^seed[^@]+@test\.com$/.test(email);
 }
 
 export const load: PageServerLoad = async ({ locals, url }) => {
@@ -20,10 +21,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const dummyUsers = dev
 		? db
-				.select({ id: user.id, name: user.name })
+				.select({ id: user.id, name: user.name, email: user.email })
 				.from(user)
 				.where(or(...DUMMY_EMAIL_PATTERNS.map((pattern) => like(user.email, pattern))))
 				.all()
+				.sort((a, b) => Number(b.email === DEV_EMAIL) - Number(a.email === DEV_EMAIL))
+				.map(({ id, name }) => ({ id, name }))
 		: [];
 
 	return { redirectTo: url.searchParams.get('redirectTo') ?? '', dummyUsers };

@@ -1,6 +1,7 @@
-import type { Handle } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import { auth } from '$lib/server/auth';
+import { DEV_SIGNED_OUT_COOKIE, signInDevUser } from '$lib/server/dev-user';
 import { getLocale, cookieName, cookieMaxAge, isLocale } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 
@@ -20,6 +21,20 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const result = await auth.api.getSession({ headers: event.request.headers });
 	event.locals.user = result?.user ?? null;
 	event.locals.session = result?.session ?? null;
+
+	if (dev && event.locals.user && event.cookies.get(DEV_SIGNED_OUT_COOKIE)) {
+		event.cookies.delete(DEV_SIGNED_OUT_COOKIE, { path: '/' });
+	}
+
+	if (
+		dev &&
+		!event.locals.user &&
+		event.request.method === 'GET' &&
+		!event.cookies.get(DEV_SIGNED_OUT_COOKIE)
+	) {
+		await signInDevUser(event.request.headers);
+		redirect(303, event.url.pathname + event.url.search);
+	}
 
 	let request = event.request;
 	if (event.locals.user && isLocale(event.locals.user.locale)) {

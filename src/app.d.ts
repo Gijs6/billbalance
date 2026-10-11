@@ -3,6 +3,8 @@ import type { auth } from '$lib/server/auth';
 type Session = typeof auth.$Infer.Session;
 
 declare global {
+	const __APP_BUILD__: string;
+
 	interface Window {
 		toast: (
 			message: string,

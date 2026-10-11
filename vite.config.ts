@@ -3,9 +3,15 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import browserslist from 'browserslist';
 import { browserslistToTargets } from 'lightningcss';
+import { existsSync, readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+	define: {
+		__APP_BUILD__: JSON.stringify(
+			command === 'build' && existsSync('VERSION') ? readFileSync('VERSION', 'utf8').trim() : 'dev'
+		)
+	},
 	server: {
 		host: true,
 		port: 4000,
@@ -40,4 +46,4 @@ export default defineConfig({
 			}
 		})
 	]
-});
+}));

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
 	import '$lib/styles/app.css';
-	import { dev } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import Footer from '$lib/components/Footer.svelte';
@@ -12,7 +11,7 @@
 
 	let { data, children }: LayoutProps = $props();
 
-	const theme = dev ? 'http://localhost:8000/theme/v2' : 'https://cdn.gijs6.nl/theme/v2';
+	const theme = 'https://cdn.gijs6.nl/theme/v2';
 
 	const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
 	const isError = $derived(page.error != null);
@@ -32,6 +31,7 @@
 	<link rel="stylesheet" href="{theme}/all.css" />
 	<link rel="stylesheet" href="{theme}/accent/lime.css" />
 	<script src="{theme}/js/toast.js" defer></script>
+	<script src="{theme}/js/confirm.js" defer></script>
 </svelte:head>
 
 <header class="navbar">
@@ -53,9 +53,7 @@
 	{@render children()}
 </main>
 
-{#if !data.user && !isError}
-	<Footer />
-{/if}
+<Footer full={!data.user || isError} />
 
 {#if data.flash}
 	<Toast message={data.flash} />

@@ -6,3 +6,4 @@ build
 .env
 .vscode
 *.db-journal
+VERSION
