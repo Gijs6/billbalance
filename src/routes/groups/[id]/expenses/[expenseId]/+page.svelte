@@ -79,18 +79,21 @@
 		{initialConsumption}
 	/>
 
-	<DangerZone
-		needsConfirm={Boolean(form && 'needsDeleteConfirm' in form && form.needsDeleteConfirm)}
-		confirmLabel={m.expense_deleteExpenseCta()}
-		cancelHref={resolve('/groups/[id]/expenses/[expenseId]', {
-			id: data.expense.groupId,
-			expenseId: data.expense.id
-		})}
-		deleteLabel={m.expense_deleteExpenseCta()}
-	>
-		{#snippet confirmMessage()}
-			{m.common_deleteConfirmPrefix()}
-			<strong>{data.expense.description}</strong>{m.expense_deleteConfirmSuffix()}
-		{/snippet}
-	</DangerZone>
+	<fieldset class="fieldset expense-delete">
+		<legend>{m.expense_deleteExpenseCta()}</legend>
+		<DangerZone
+			needsConfirm={Boolean(form && 'needsDeleteConfirm' in form && form.needsDeleteConfirm)}
+			confirmLabel={m.expense_deleteExpenseCta()}
+			cancelHref={resolve('/groups/[id]/expenses/[expenseId]', {
+				id: data.expense.groupId,
+				expenseId: data.expense.id
+			})}
+			deleteLabel={m.expense_deleteExpenseCta()}
+		>
+			{#snippet confirmMessage()}
+				{m.common_deleteConfirmPrefix()}
+				<strong>{data.expense.description}</strong>{m.expense_deleteConfirmSuffix()}
+			{/snippet}
+		</DangerZone>
+	</fieldset>
 {/if}

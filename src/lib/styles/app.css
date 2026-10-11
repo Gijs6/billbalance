@@ -103,3 +103,7 @@
 		cursor: default;
 	}
 }
+
+.expense-delete {
+	margin-block-start: var(--space-2xl);
+}
