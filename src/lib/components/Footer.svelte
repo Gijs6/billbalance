@@ -14,14 +14,11 @@
 
 <footer class="footer">
 	<div class="footer__inner">
-		{#if !full}
-			<p class="footer__version">{APP_VERSION}</p>
-		{:else}
-			<p>
-				<a class="footer__app" href={resolve('/')}><Mark />Billbalance</a>
-				<span class="footer__version">({APP_VERSION})</span> by
-				<a href="https://gijs6.nl">Gijs6</a>
-			</p>
+		<p>
+			<a class="footer__app" href={resolve('/')}><Mark />Billbalance</a> by
+			<a href="https://gijs6.nl">Gijs6</a>
+		</p>
+		{#if full}
 			<form method="POST" action="/set-locale" class="locale-switch">
 				<input type="hidden" name="redirectTo" value={page.url.pathname} />
 				<span id="footer-locale-label">{m.settings_languageHeading()}:</span>
@@ -39,7 +36,7 @@
 					{/each}
 				</span>
 			</form>
-			<p><a href="https://unlicense.org" rel="license">Unlicensed</a></p>
 		{/if}
+		<p class="footer__version">{APP_VERSION}</p>
 	</div>
 </footer>
