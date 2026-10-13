@@ -20,7 +20,7 @@
 
 {#if !data.user}
 	<p>{m.join_signInPrompt()}</p>
-	<p class="form__actions">
+	<p class="page-actions">
 		<Button href={resolve(`/login?redirectTo=${encodeURIComponent(redirectTo)}`)}>
 			{m.common_signIn()}
 		</Button>

@@ -32,37 +32,41 @@
 {#if data.isClosed}
 	<h2>{data.expense.description}</h2>
 	<p class="alert">{m.expense_closedHint()}</p>
-	<table class="table table--kv">
-		<tbody>
-			<tr>
-				<th scope="row">{m.expense_totalLabel()}</th>
-				<td class="balance">{formatCents(data.expense.amountCents, locale)}</td>
-			</tr>
-			<tr>
-				<th scope="row">{m.expense_paidByLabel()}</th>
-				<td>
-					{data.expense.paidByUser === data.user?.id
-						? m.common_youLower()
-						: memberName(data.expense.paidByUser)}
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<h3>{m.expense_consumedLabel()}</h3>
-	<table class="table">
-		<tbody>
-			{#each data.consumption as consumedAmount (consumedAmount.userId)}
+	<div class="table-wrap">
+		<table class="table table--kv table--fit">
+			<tbody>
 				<tr>
-					<td>
-						{consumedAmount.userId === data.user?.id
-							? m.common_you()
-							: memberName(consumedAmount.userId)}
-					</td>
-					<td class="table__num balance">{formatCents(consumedAmount.amountCents, locale)}</td>
+					<th scope="row">{m.expense_totalLabel()}</th>
+					<td class="balance">{formatCents(data.expense.amountCents, locale)}</td>
 				</tr>
-			{/each}
-		</tbody>
-	</table>
+				<tr>
+					<th scope="row">{m.expense_paidByLabel()}</th>
+					<td>
+						{data.expense.paidByUser === data.user?.id
+							? m.common_youLower()
+							: memberName(data.expense.paidByUser)}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<h3>{m.expense_consumedLabel()}</h3>
+	<div class="table-wrap">
+		<table class="table">
+			<tbody>
+				{#each data.consumption as consumedAmount (consumedAmount.userId)}
+					<tr>
+						<td>
+							{consumedAmount.userId === data.user?.id
+								? m.common_you()
+								: memberName(consumedAmount.userId)}
+						</td>
+						<td class="table__num balance">{formatCents(consumedAmount.amountCents, locale)}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 {:else}
 	<h2>{m.expense_editTitle()}</h2>
 

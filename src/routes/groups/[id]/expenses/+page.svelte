@@ -23,7 +23,7 @@
 <PageTitle title={m.group_tabExpenses()} />
 
 {#if !data.isClosed}
-	<p class="form__actions">
+	<p class="page-actions">
 		<Button href={resolve('/groups/[id]/expenses/new', { id: groupId })}>
 			{m.expenses_addCta()}
 		</Button>
@@ -54,7 +54,7 @@
 									expenseId: expense.id
 								})}>{expense.description}</a
 							>
-							<span class="row__meta">{dateFormatter.format(expense.createdAt)}</span>
+							<span class="table__sub">{dateFormatter.format(expense.createdAt)}</span>
 						</td>
 						<td>{expense.paidByName}</td>
 						<td class="table__num balance">{formatCents(expense.amountCents, locale)}</td>

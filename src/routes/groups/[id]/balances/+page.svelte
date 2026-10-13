@@ -23,7 +23,7 @@
 {#if data.isClosed}
 	<p class="alert">{m.balances_closedHint()}</p>
 {:else}
-	<p class="form__actions">
+	<p class="page-actions">
 		<Button href={resolve('/groups/[id]/settlement', { id: groupId })}>
 			{m.balances_settleCta()}
 		</Button>

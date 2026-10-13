@@ -41,7 +41,7 @@
 		<h1>Billbalance</h1>
 	</div>
 	<p class="lead">{m.home_tagline()}</p>
-	<p class="form__actions">
+	<p class="page-actions">
 		<Button href={resolve('/login')}>{m.common_signIn()}</Button>
 		<Button href={resolve('/register')}>{m.common_signUp()}</Button>
 	</p>
