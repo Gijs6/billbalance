@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { resolve } from '$app/paths';
 	import Button from '$lib/components/Button.svelte';
 	import DangerZone from '$lib/components/DangerZone.svelte';
 	import FieldLabel from '$lib/components/FieldLabel.svelte';
@@ -32,17 +31,11 @@
 <fieldset class="fieldset">
 	<legend>{m.group_deleteHeading()}</legend>
 	<DangerZone
-		needsConfirm={Boolean(form?.needsDeleteConfirm)}
-		confirmLabel={m.group_deleteGroupCta()}
-		cancelHref={resolve('/groups/[id]/settings', { id: data.group.id })}
-		deleteLabel={m.group_deleteGroupCta()}
+		label={m.group_deleteGroupCta()}
+		question={m.group_deleteConfirm({ name: data.group.name })}
 	>
 		{#snippet hint()}
 			{m.group_deleteHint()}
-		{/snippet}
-		{#snippet confirmMessage()}
-			{m.common_deleteConfirmPrefix()}
-			<strong>{data.group.name}</strong>{m.group_deleteConfirmSuffix()}
 		{/snippet}
 	</DangerZone>
 </fieldset>

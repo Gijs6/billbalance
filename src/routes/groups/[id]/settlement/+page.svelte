@@ -12,8 +12,6 @@
 	let { data }: { data: PageData } = $props();
 	const currentUserId = $derived(data.user?.id);
 	const locale = getLocale();
-
-	let confirmDialog: HTMLDialogElement | undefined = $state();
 </script>
 
 <PageTitle title={data.isClosed ? m.group_tabSettlement() : m.settlement_previewTitle()} />
@@ -22,9 +20,15 @@
 	<section class="panel">
 		<h2 class="panel__heading">
 			{m.settlement_previewTitle()}
-			<Button type="button" small onclick={() => confirmDialog?.showModal()}>
-				{m.balances_settleCta()}
-			</Button>
+			<form
+				method="POST"
+				action="?/confirm"
+				data-confirm={`${m.settlement_confirmHeading({ name: data.group.name })} ${m.settlement_confirmWarning({ name: data.group.name })}`}
+				data-confirm-action={m.settlement_confirmCta()}
+				use:enhance
+			>
+				<Button type="submit" small>{m.balances_settleCta()}</Button>
+			</form>
 		</h2>
 
 		{#if data.edges.length > 0}
@@ -49,26 +53,11 @@
 				{/if}
 			</p>
 		{:else}
-			<div class="empty"><p>{m.settlement_emptyPreview()}</p></div>
+			<div class="empty"><p class="empty__title">{m.settlement_emptyPreview()}</p></div>
 		{/if}
 	</section>
-
-	<dialog bind:this={confirmDialog} class="dialog" aria-labelledby="settle-group-heading">
-		<div class="dialog__head">
-			<h2 id="settle-group-heading">{m.settlement_confirmHeading({ name: data.group.name })}</h2>
-		</div>
-		<div class="dialog__body">
-			<p class="alert alert--danger" role="alert">
-				{m.settlement_confirmWarning({ name: data.group.name })}
-			</p>
-		</div>
-		<form method="POST" action="?/confirm" class="dialog__actions" use:enhance>
-			<Button type="button" onclick={() => confirmDialog?.close()}>{m.common_cancel()}</Button>
-			<Button type="submit" variant="danger">{m.settlement_confirmCta()}</Button>
-		</form>
-	</dialog>
 {:else if data.settlements.length === 0}
-	<div class="empty"><p>{m.settlement_emptyClosed()}</p></div>
+	<div class="empty"><p class="empty__title">{m.settlement_emptyClosed()}</p></div>
 {:else if data.myReceivables.length > 0 || data.myPayables.length > 0}
 	<section class="panel" aria-labelledby="your-overview-heading">
 		<h2 id="your-overview-heading" class="panel__heading">{m.settlement_yourOverviewHeading()}</h2>
@@ -76,8 +65,8 @@
 			<table class="table">
 				{#if data.myReceivables.length > 0}
 					<tbody>
-						<tr class="settlement__person">
-							<th scope="rowgroup" colspan="3">{m.settlement_toReceiveHeading()}</th>
+						<tr class="table__group">
+							<th scope="colgroup" colspan="3">{m.settlement_toReceiveHeading()}</th>
 						</tr>
 						{#each data.myReceivables as edge (edge.id)}
 							<tr>
@@ -89,8 +78,8 @@
 				{/if}
 				{#if data.myPayables.length > 0}
 					<tbody>
-						<tr class="settlement__person">
-							<th scope="rowgroup" colspan="3">{m.settlement_toPayHeading()}</th>
+						<tr class="table__group">
+							<th scope="colgroup" colspan="3">{m.settlement_toPayHeading()}</th>
 						</tr>
 						{#each data.myPayables as edge (edge.id)}
 							<tr>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
 	import DangerZone from '$lib/components/DangerZone.svelte';
 	import ExpenseForm from '$lib/components/ExpenseForm.svelte';
 	import PageTitle from '$lib/components/PageTitle.svelte';
@@ -43,7 +42,7 @@
 					<th scope="row">{m.expense_paidByLabel()}</th>
 					<td>
 						{data.expense.paidByUser === data.user?.id
-							? m.common_youLower()
+							? m.common_you()
 							: memberName(data.expense.paidByUser)}
 					</td>
 				</tr>
@@ -86,18 +85,8 @@
 	<fieldset class="fieldset expense-delete">
 		<legend>{m.expense_deleteExpenseCta()}</legend>
 		<DangerZone
-			needsConfirm={Boolean(form && 'needsDeleteConfirm' in form && form.needsDeleteConfirm)}
-			confirmLabel={m.expense_deleteExpenseCta()}
-			cancelHref={resolve('/groups/[id]/expenses/[expenseId]', {
-				id: data.expense.groupId,
-				expenseId: data.expense.id
-			})}
-			deleteLabel={m.expense_deleteExpenseCta()}
-		>
-			{#snippet confirmMessage()}
-				{m.common_deleteConfirmPrefix()}
-				<strong>{data.expense.description}</strong>{m.expense_deleteConfirmSuffix()}
-			{/snippet}
-		</DangerZone>
+			label={m.expense_deleteExpenseCta()}
+			question={m.expense_deleteConfirm({ name: data.expense.description })}
+		/>
 	</fieldset>
 {/if}

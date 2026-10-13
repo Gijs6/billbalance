@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { resolve } from '$app/paths';
 	import Button from '$lib/components/Button.svelte';
 	import DangerZone from '$lib/components/DangerZone.svelte';
 	import FieldLabel from '$lib/components/FieldLabel.svelte';
@@ -94,26 +93,11 @@
 		<p class="alert alert--danger" role="alert">{form.deleteMessage}</p>
 	{/if}
 	{#if data.groups.length > 0}
-		<p class="muted">
-			{m.account_cannotDeleteHint({
-				target:
-					data.groups.length === 1
-						? m.account_cannotDeleteTargetOne()
-						: m.account_cannotDeleteTargetMany()
-			})}
-		</p>
+		<p class="muted">{m.account_cannotDeleteHint()}</p>
 	{:else}
-		<DangerZone
-			needsConfirm={Boolean(form?.needsDeleteConfirm)}
-			confirmLabel={m.account_deleteAccountCta()}
-			cancelHref={resolve('/account')}
-			deleteLabel={m.account_deleteAccountCta()}
-		>
+		<DangerZone label={m.account_deleteAccountCta()} question={m.account_deleteConfirmMessage()}>
 			{#snippet hint()}
 				{m.account_deleteHint()}
-			{/snippet}
-			{#snippet confirmMessage()}
-				{m.account_deleteConfirmMessage()}
 			{/snippet}
 		</DangerZone>
 	{/if}
