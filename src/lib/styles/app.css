@@ -53,10 +53,6 @@
 	}
 }
 
-.settlement__person th {
-	background: var(--head-soft);
-}
-
 .settlement__summary {
 	font-weight: 700;
 }

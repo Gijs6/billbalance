@@ -5,6 +5,8 @@
 	let visible = $state(true);
 
 	$effect(() => {
+		void message;
+		visible = true;
 		const timeout = setTimeout(() => (visible = false), 6000);
 		return () => clearTimeout(timeout);
 	});

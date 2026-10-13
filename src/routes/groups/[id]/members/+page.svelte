@@ -9,8 +9,12 @@
 
 	const joinUrl = $derived(`${data.origin}/join/${data.group.joinCode}`);
 	async function copyLink() {
-		await navigator.clipboard.writeText(joinUrl);
-		window.toast(m.common_linkCopied(), { type: 'success' });
+		try {
+			await navigator.clipboard.writeText(joinUrl);
+			window.toast(m.common_linkCopied(), { type: 'success' });
+		} catch {
+			window.toast(m.common_linkCopyFailed(), { type: 'danger' });
+		}
 	}
 
 	const dateFormatter = new Intl.DateTimeFormat(getLocale(), {
@@ -47,15 +51,19 @@
 	<h2 id="members-heading" class="panel__heading">{m.group_tabMembers()}</h2>
 	<div class="table-wrap">
 		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">{m.common_name()}</th>
+					<th scope="col">{m.members_memberSince()}</th>
+				</tr>
+			</thead>
 			<tbody>
 				{#each data.members as member (member.id)}
 					<tr>
 						<th scope="row" class="row__title"
 							>{member.id === data.user?.id ? m.common_you() : member.name}</th
 						>
-						<td class="muted"
-							>{m.members_memberSince({ date: dateFormatter.format(member.joinedAt) })}</td
-						>
+						<td>{dateFormatter.format(member.joinedAt)}</td>
 					</tr>
 				{/each}
 			</tbody>

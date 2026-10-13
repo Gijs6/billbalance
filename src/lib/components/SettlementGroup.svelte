@@ -24,8 +24,8 @@
 </script>
 
 <tbody>
-	<tr class="settlement__person">
-		<th scope="rowgroup" colspan="3">
+	<tr class="table__group">
+		<th scope="colgroup" colspan="3">
 			{isCurrentUser ? m.common_you() : person.name},
 			<BalanceLabel
 				cents={direction === 'creditor' ? person.totalCents : -person.totalCents}

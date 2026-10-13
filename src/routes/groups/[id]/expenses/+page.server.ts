@@ -36,7 +36,7 @@ export const load: PageServerLoad = async ({ params, locals, parent }) => {
 				amountCents: e.amountCents,
 				paidByName:
 					e.paidByUser === userId
-						? m.common_youLower()
+						? m.common_you()
 						: (memberNames.get(e.paidByUser) ?? m.common_unknown()),
 				createdAt: e.createdAt,
 				myEffectCents: paidCents - consumedCents
