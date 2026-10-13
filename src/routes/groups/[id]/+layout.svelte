@@ -51,11 +51,11 @@
 		{#if data.group.status === 'closed'}
 			{#if data.allSettled}
 				<StatusLabel variant="paid" title={m.group_statusCompletedTitle()}>
-					{m.group_statusCompleted()}
+					({m.group_statusCompleted()})
 				</StatusLabel>
 			{:else}
 				<StatusLabel variant="pending" title={m.group_statusWaitingTitle()}>
-					{m.group_statusWaiting()}
+					({m.group_statusWaiting()})
 				</StatusLabel>
 			{/if}
 		{/if}
