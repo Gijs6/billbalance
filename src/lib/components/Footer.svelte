@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { LOCALE_OPTIONS } from '$lib/locales';
 	import { getLocale } from '$lib/paraglide/runtime';
@@ -15,7 +14,7 @@
 <footer class="footer">
 	<div class="footer__inner">
 		<p>
-			<a class="footer__app" href={resolve('/')}><Mark />Billbalance</a> by
+			<a class="footer__app" href="https://github.com/gijs6/billbalance"><Mark />Billbalance</a> by
 			<a href="https://gijs6.nl">Gijs6</a>
 		</p>
 		{#if full}
