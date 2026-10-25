@@ -1,9 +1,12 @@
-import { redirect, type Handle } from '@sveltejs/kit';
+import { redirect, type Handle, type HandleServerError } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import { auth } from '$lib/server/auth';
 import { DEV_SIGNED_OUT_COOKIE, signInDevUser } from '$lib/server/dev-user';
+import { registerProcessErrors, report } from '$lib/server/errors';
 import { getLocale, cookieName, cookieMaxAge, isLocale } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
+
+registerProcessErrors();
 
 function withLocaleCookie(request: Request, locale: string): Request {
 	const cookieHeader = request.headers.get('cookie') ?? '';
@@ -56,4 +59,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 			transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', getLocale())
 		});
 	});
+};
+
+export const handleError: HandleServerError = ({ error, event, status }) => {
+	if (status < 500) return;
+	report(error, 'request', event);
 };
